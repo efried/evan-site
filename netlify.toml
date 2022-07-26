@@ -3,7 +3,7 @@
   command = "export ELM_HOME=\"$NETLIFY_CACHE_DIR/elm\" && yarn build"
 
 [dev]
-  command = "npm start"
+  command = "yarn start"
   targetPort = 1234
   autoLaunch = true
   framework = "#custom"
