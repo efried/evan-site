@@ -1,0 +1,29 @@
+# Yarn
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# NPM
+node_modules/*
+
+# Desktop Services Store on macOS
+.DS_Store
+
+# VS Code
+.vscode
+
+# Elm
+elm-stuff
+elm.js
+dist
+.elm-pages
+
+# Logs
+logs
+*.log
+
+token
