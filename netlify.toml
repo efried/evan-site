@@ -1,9 +1,0 @@
-[build]
-  publish = "./dist/"
-  command = "export ELM_HOME=\"$NETLIFY_CACHE_DIR/elm\" && yarn build"
-
-[dev]
-  command = "npm start"
-  targetPort = 1234
-  autoLaunch = true
-  framework = "#custom"
