@@ -120,13 +120,11 @@ view maybeUrl sharedModel static =
     { title = "Projects"
     , body =
         Element.column
-            [ Element.width Element.fill
-            , Element.height Element.fill
-            ]
+            []
             (List.map
                 (\project ->
                     Element.row
-                        [ Element.padding 10
+                        [ Element.paddingXY 0 10
                         , Element.spacing 10
                         ]
                         [ Element.newTabLink [ Font.bold, Font.underline, Font.color (Element.rgb255 18 147 216) ]

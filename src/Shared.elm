@@ -4,6 +4,7 @@ import Browser.Navigation
 import DataSource
 import Element exposing (rgb255)
 import Element.Background as Background
+import Header
 import Html exposing (Html)
 import Pages.Flags
 import Pages.PageUrl exposing (PageUrl)
@@ -100,9 +101,19 @@ view sharedData page model toMsg pageView =
     { title = pageView.title
     , body =
         Element.layout
-            [ Element.width Element.fill
-            , Element.height Element.fill
-            , Background.color (rgb255 237 237 233)
+            [ Background.color (rgb255 237 237 233)
             ]
-            pageView.body
+            (Element.column
+                [ Element.width Element.fill
+                , Element.height Element.fill
+                ]
+                [ Header.view page.path
+                , Element.el
+                    [ Element.width Element.fill
+                    , Element.height Element.fill
+                    , Element.padding 20
+                    ]
+                    pageView.body
+                ]
+            )
     }
