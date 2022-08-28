@@ -2,8 +2,9 @@ module Shared exposing (Data, Model, Msg(..), SharedMsg(..), template)
 
 import Browser.Navigation
 import DataSource
-import Element exposing (rgb255)
+import Element
 import Element.Background as Background
+import Element.Font as Font
 import Header
 import Html exposing (Html)
 import Pages.Flags
@@ -11,6 +12,7 @@ import Pages.PageUrl exposing (PageUrl)
 import Path exposing (Path)
 import Route exposing (Route)
 import SharedTemplate exposing (SharedTemplate)
+import Style
 import View exposing (View)
 
 
@@ -101,7 +103,7 @@ view sharedData page model toMsg pageView =
     { title = pageView.title
     , body =
         Element.layout
-            [ Background.color (rgb255 237 237 233)
+            [ Background.color Style.white
             ]
             (Element.column
                 [ Element.width Element.fill
@@ -112,6 +114,7 @@ view sharedData page model toMsg pageView =
                     [ Element.width Element.fill
                     , Element.height Element.fill
                     , Element.padding 20
+                    , Font.color Style.primary
                     ]
                     pageView.body
                 ]

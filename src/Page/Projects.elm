@@ -12,6 +12,7 @@ import Pages.PageUrl exposing (PageUrl)
 import Pages.Secrets as Secrets
 import Pages.Url
 import Shared
+import Style
 import View exposing (View)
 
 
@@ -127,7 +128,7 @@ view maybeUrl sharedModel static =
                         [ Element.paddingXY 0 10
                         , Element.spacing 10
                         ]
-                        [ Element.newTabLink [ Font.bold, Font.underline, Font.color (Element.rgb255 18 147 216) ]
+                        [ Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                             { url = project.htmlUrl
                             , label = Element.text project.name
                             }
@@ -147,7 +148,7 @@ view maybeUrl sharedModel static =
                                 Element.none
 
                             Just homepage ->
-                                Element.newTabLink [ Font.bold, Font.underline, Font.color (Element.rgb255 18 147 216) ]
+                                Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                                     { url = homepage
                                     , label = Element.text "Try it out!"
                                     }

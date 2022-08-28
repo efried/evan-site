@@ -5,6 +5,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Pages.Url as Url
 import Path exposing (Path)
+import Style
 
 
 view : Path -> Element.Element msg
@@ -12,8 +13,9 @@ view currentPath =
     Element.row
         [ Element.width Element.fill
         , Element.paddingXY 20 20
-        , Border.color (Element.rgb255 0 0 0)
+        , Border.color Style.primary
         , Border.widthEach { bottom = 2, left = 0, right = 0, top = 0 }
+        , Font.color Style.primary
         ]
         [ if String.isEmpty (Path.toRelative currentPath) then
             Element.none
