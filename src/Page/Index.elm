@@ -95,7 +95,9 @@ viewExternalAccount { source, username, url } =
             [ Element.width (Element.fillPortion 1) ]
             [ Element.text (source ++ ": ") ]
         , Element.column
-            [ Element.width (Element.fillPortion 1), Font.color Style.link ]
+            [ Element.width (Element.fillPortion 1)
+            , Font.color Style.link
+            ]
             [ Element.newTabLink
                 []
                 { url = ElmUrl.toString url, label = Element.text username }
@@ -116,12 +118,26 @@ view maybeUrl sharedModel static =
             , Element.height Element.fill
             ]
             [ Element.column
-                [ Element.width (Element.fillPortion 4), Element.paddingXY 0 100, Element.spacing 16, Element.centerX ]
-                [ Element.el [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ] (Element.text "It's me, Evan!")
-                , Element.image [ Element.centerX, Element.width (Element.px 320), Element.height (Element.px 320) ] { src = "images/avatar.webp", description = "Picture of Evan" }
+                [ Element.width (Element.fillPortion 4)
+                , Element.paddingXY 0 100
+                , Element.spacing 16
+                , Element.centerX
+                ]
+                [ Element.el
+                    [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+                    (Element.text "It's me, Evan!")
+                , Element.image
+                    [ Element.centerX
+                    , Element.width (Element.px 320)
+                    , Element.height (Element.px 320)
+                    ]
+                    { src = "images/avatar.webp", description = "Picture of Evan" }
                 ]
             , Element.column
-                [ Element.width (Element.fillPortion 2), Element.paddingXY 0 100, Element.spacing 16 ]
+                [ Element.width (Element.fillPortion 2)
+                , Element.paddingXY 0 100
+                , Element.spacing 16
+                ]
                 (Element.text "You can find me on..."
                     :: (List.filterMap
                             toExternalContact
