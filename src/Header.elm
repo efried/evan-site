@@ -15,12 +15,16 @@ view currentPath =
         , Border.color (Element.rgb255 0 0 0)
         , Border.widthEach { bottom = 2, left = 0, right = 0, top = 0 }
         ]
-        [ Element.el
-            [ Element.alignLeft ]
-            (Element.link
-                []
-                { url = "/", label = Element.text "Evan Friedenberg" }
-            )
+        [ if String.isEmpty (Path.toRelative currentPath) then
+            Element.none
+
+          else
+            Element.el
+                [ Element.alignLeft ]
+                (Element.link
+                    []
+                    { url = "/", label = Element.text "Evan Friedenberg" }
+                )
         , Element.column
             [ Element.alignRight ]
             [ Element.row
