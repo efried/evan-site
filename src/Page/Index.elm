@@ -105,6 +105,67 @@ viewExternalAccount { source, username, url } =
         ]
 
 
+viewExternalAccounts : List (Element.Element msg)
+viewExternalAccounts =
+    Element.text "You can find me on..."
+        :: (List.filterMap
+                toExternalContact
+                externalContactInfo
+                |> List.map viewExternalAccount
+           )
+
+
+wideLayout : List (Element.Element msg)
+wideLayout =
+    [ Element.column
+        [ Element.width (Element.fillPortion 4)
+        , Element.paddingXY 0 100
+        , Element.spacing 16
+        , Element.centerX
+        ]
+        [ Element.el
+            [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+            (Element.text "It's me, Evan!")
+        , Element.image
+            [ Element.centerX
+            , Element.width (Element.px 320)
+            , Element.height (Element.px 320)
+            ]
+            { src = "images/avatar.webp", description = "Picture of Evan" }
+        ]
+    , Element.column
+        [ Element.width (Element.fillPortion 2)
+        , Element.paddingXY 0 100
+        , Element.spacing 16
+        ]
+        viewExternalAccounts
+    ]
+
+
+narrowLayout : List (Element.Element msg)
+narrowLayout =
+    [ Element.column
+        [ Element.width (Element.fillPortion 4)
+        , Element.paddingXY 0 100
+        , Element.spacing 16
+        , Element.centerX
+        ]
+        (List.append
+            [ Element.el
+                [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+                (Element.text "It's me, Evan!")
+            , Element.image
+                [ Element.centerX
+                , Element.width (Element.px 200)
+                , Element.height (Element.px 200)
+                ]
+                { src = "images/avatar-small.webp", description = "Picture of Evan" }
+            ]
+            [ Element.column [ Element.centerX, Element.spacing 10 ] viewExternalAccounts ]
+        )
+    ]
+
+
 view :
     Maybe PageUrl
     -> Shared.Model
@@ -113,37 +174,18 @@ view :
 view maybeUrl sharedModel static =
     { title = "Home"
     , body =
+        let
+            pageBody =
+                case sharedModel.device.class of
+                    Element.Desktop ->
+                        wideLayout
+
+                    _ ->
+                        narrowLayout
+        in
         Element.row
             [ Element.width Element.fill
             , Element.height Element.fill
             ]
-            [ Element.column
-                [ Element.width (Element.fillPortion 4)
-                , Element.paddingXY 0 100
-                , Element.spacing 16
-                , Element.centerX
-                ]
-                [ Element.el
-                    [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
-                    (Element.text "It's me, Evan!")
-                , Element.image
-                    [ Element.centerX
-                    , Element.width (Element.px 320)
-                    , Element.height (Element.px 320)
-                    ]
-                    { src = "images/avatar.webp", description = "Picture of Evan" }
-                ]
-            , Element.column
-                [ Element.width (Element.fillPortion 2)
-                , Element.paddingXY 0 100
-                , Element.spacing 16
-                ]
-                (Element.text "You can find me on..."
-                    :: (List.filterMap
-                            toExternalContact
-                            externalContactInfo
-                            |> List.map viewExternalAccount
-                       )
-                )
-            ]
+            pageBody
     }

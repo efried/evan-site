@@ -7,6 +7,7 @@ import Element.Background as Background
 import Element.Font as Font
 import Header
 import Html exposing (Html)
+import Json.Decode exposing (Decoder, decodeValue, field, int, map2)
 import Pages.Flags
 import Pages.PageUrl exposing (PageUrl)
 import Path exposing (Path)
@@ -46,7 +47,21 @@ type SharedMsg
 
 type alias Model =
     { showMobileMenu : Bool
+    , device : Element.Device
     }
+
+
+type alias Window =
+    { width : Int
+    , height : Int
+    }
+
+
+windowDecoder : Decoder Window
+windowDecoder =
+    map2 Window
+        (field "width" int)
+        (field "height" int)
 
 
 init :
@@ -64,7 +79,23 @@ init :
             }
     -> ( Model, Cmd Msg )
 init navigationKey flags maybePagePath =
-    ( { showMobileMenu = False }
+    let
+        device =
+            case flags of
+                Pages.Flags.BrowserFlags bflags ->
+                    case decodeValue windowDecoder bflags of
+                        Ok window ->
+                            Element.classifyDevice window
+
+                        Err _ ->
+                            { class = Element.Phone, orientation = Element.Portrait }
+
+                Pages.Flags.PreRenderFlags ->
+                    { class = Element.Phone, orientation = Element.Portrait }
+    in
+    ( { showMobileMenu = False
+      , device = device
+      }
     , Cmd.none
     )
 
