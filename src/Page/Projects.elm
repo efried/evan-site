@@ -3,6 +3,7 @@ module Page.Projects exposing (Data, Model, Msg, page)
 import DataSource exposing (DataSource)
 import DataSource.Http
 import Element
+import Element.Border as Border
 import Element.Font as Font
 import Head
 import Head.Seo as Seo
@@ -112,6 +113,55 @@ validateNonEmptyString s =
         Just s
 
 
+viewProject : Project -> Element.Element msg
+viewProject project =
+    Element.column
+        [ Element.width (Element.fill |> Element.minimum 400)
+        , Element.height (Element.px 200)
+        , Element.padding 10
+        , Border.solid
+        , Border.width 2
+        , Border.rounded 6
+        ]
+        [ Element.row
+            [ Font.size 24
+            , Font.color Style.secondary
+            , Element.width Element.fill
+            , Element.spacingXY 0 10
+            , Border.widthEach { bottom = 2, top = 0, left = 0, right = 0 }
+            ]
+            [ Element.text project.name ]
+        , Element.column []
+            [ Element.paragraph [ Element.paddingXY 0 10 ]
+                [ Element.text
+                    (case project.description of
+                        Nothing ->
+                            "No description."
+
+                        Just description ->
+                            description ++ "."
+                    )
+                ]
+            , Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
+                { url = project.htmlUrl
+                , label = Element.text "View it on Github"
+                }
+            , case
+                project.homepage
+                    |> Maybe.andThen validateNonEmptyString
+              of
+                Nothing ->
+                    Element.none
+
+                Just homepage ->
+                    Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
+                        { url = homepage
+                        , label = Element.text "Try it out!"
+                        }
+            ]
+        ]
+
+
 view :
     Maybe PageUrl
     -> Shared.Model
@@ -120,40 +170,15 @@ view :
 view maybeUrl sharedModel static =
     { title = "Projects"
     , body =
-        Element.column
+        Element.el
             []
-            (List.map
-                (\project ->
-                    Element.row
-                        [ Element.paddingXY 0 10
-                        , Element.spacing 10
-                        ]
-                        [ Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
-                            { url = project.htmlUrl
-                            , label = Element.text project.name
-                            }
-                        , Element.text
-                            (case project.description of
-                                Nothing ->
-                                    "No description."
-
-                                Just description ->
-                                    description ++ "."
-                            )
-                        , case
-                            project.homepage
-                                |> Maybe.andThen validateNonEmptyString
-                          of
-                            Nothing ->
-                                Element.none
-
-                            Just homepage ->
-                                Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
-                                    { url = homepage
-                                    , label = Element.text "Try it out!"
-                                    }
-                        ]
+            (Element.wrappedRow
+                [ Element.spacing 10
+                , Element.padding 20
+                ]
+                (List.map
+                    viewProject
+                    static.data
                 )
-                static.data
             )
     }

@@ -177,6 +177,9 @@ view maybeUrl sharedModel static =
         let
             pageBody =
                 case sharedModel.device.class of
+                    Element.BigDesktop ->
+                        wideLayout
+
                     Element.Desktop ->
                         wideLayout
 
