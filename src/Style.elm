@@ -15,7 +15,7 @@ secondary =
 
 link : Color
 link =
-    Element.rgb255 42 157 143
+    Element.rgb255 0 125 152
 
 
 white : Color
