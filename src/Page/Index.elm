@@ -8,6 +8,7 @@ import Head.Seo as Seo
 import Page exposing (Page, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
+import Path
 import Shared
 import Style
 import Url as ElmUrl
@@ -46,16 +47,16 @@ head :
 head static =
     Seo.summary
         { canonicalUrlOverride = Nothing
-        , siteName = "elm-pages"
+        , siteName = "evanfriedenberg.com"
         , image =
-            { url = Pages.Url.external "TODO"
-            , alt = "elm-pages logo"
-            , dimensions = Nothing
-            , mimeType = Nothing
+            { url = Pages.Url.fromPath (Path.join [ "images", "avatar.webp" ])
+            , alt = "evan avatar"
+            , dimensions = Just { width = 320, height = 320 }
+            , mimeType = Just "image/webp"
             }
-        , description = "TODO"
+        , description = "A site about me and the things I work on"
         , locale = Nothing
-        , title = "Home"
+        , title = "evanfriedenberg.com"
         }
         |> Seo.website
 
