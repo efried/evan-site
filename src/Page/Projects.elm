@@ -116,7 +116,7 @@ validateNonEmptyString s =
 viewProject : Project -> Element.Element msg
 viewProject project =
     Element.column
-        [ Element.width (Element.fill |> Element.minimum 400)
+        [ Element.width (Element.fill |> Element.minimum 315)
         , Element.height (Element.px 200)
         , Element.padding 10
         , Border.solid
