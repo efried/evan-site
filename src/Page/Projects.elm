@@ -113,10 +113,18 @@ validateNonEmptyString s =
         Just s
 
 
-viewProject : Project -> Element.Element msg
-viewProject project =
+viewProject : Element.Device -> Project -> Element.Element msg
+viewProject device project =
+    let
+        width =
+            if Style.wideView device then
+                Element.fill |> Element.minimum 400
+
+            else
+                Element.fill |> Element.maximum 400
+    in
     Element.column
-        [ Element.width (Element.fill |> Element.minimum 400)
+        [ Element.width width
         , Element.height (Element.px 200)
         , Element.padding 10
         , Border.solid
@@ -177,7 +185,7 @@ view maybeUrl sharedModel static =
                 , Element.padding 20
                 ]
                 (List.map
-                    viewProject
+                    (viewProject sharedModel.device)
                     static.data
                 )
             )
