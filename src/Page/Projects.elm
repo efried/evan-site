@@ -155,10 +155,13 @@ viewProject project =
                     Element.none
 
                 Just homepage ->
-                    Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
-                        { url = homepage
-                        , label = Element.text "Try it out!"
-                        }
+                    Element.el [ Element.paddingXY 0 10 ]
+                        (Element.newTabLink
+                            [ Font.bold, Font.underline, Font.color Style.link, Element.spacingXY 0 15 ]
+                            { url = homepage
+                            , label = Element.text "Try it out!"
+                            }
+                        )
             ]
         ]
 
