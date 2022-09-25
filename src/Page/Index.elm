@@ -176,11 +176,15 @@ view maybeUrl sharedModel static =
     , body =
         let
             pageBody =
-                if Style.wideView sharedModel.device then
-                    wideLayout
+                case sharedModel.device.class of
+                    Element.BigDesktop ->
+                        wideLayout
 
-                else
-                    narrowLayout
+                    Element.Desktop ->
+                        wideLayout
+
+                    _ ->
+                        narrowLayout
         in
         Element.row
             [ Element.width Element.fill

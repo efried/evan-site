@@ -1,6 +1,6 @@
 module Style exposing (..)
 
-import Element exposing (Color, DeviceClass(..), Orientation(..))
+import Element exposing (Color)
 
 
 primary : Color
@@ -21,22 +21,3 @@ link =
 white : Color
 white =
     Element.rgb255 255 255 255
-
-
-wideView : Element.Device -> Bool
-wideView device =
-    case ( device.class, device.orientation ) of
-        ( Phone, _ ) ->
-            False
-
-        ( Tablet, _ ) ->
-            False
-
-        ( Desktop, Portrait ) ->
-            False
-
-        ( Desktop, Landscape ) ->
-            True
-
-        ( BigDesktop, _ ) ->
-            True
