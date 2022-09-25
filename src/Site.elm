@@ -14,7 +14,7 @@ type alias Data =
 config : SiteConfig Data
 config =
     { data = data
-    , canonicalUrl = "https://elm-pages.com"
+    , canonicalUrl = "https://evanfriedenberg.com"
     , manifest = manifest
     , head = head
     }
@@ -34,8 +34,8 @@ head static =
 manifest : Data -> Manifest.Config
 manifest static =
     Manifest.init
-        { name = "Site Name"
-        , description = "Description"
+        { name = "Evan Friedenberg"
+        , description = "Evan Friedenberg's Homepage"
         , startUrl = Route.Index |> Route.toPath
         , icons = []
         }

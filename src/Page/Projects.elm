@@ -12,6 +12,7 @@ import Page exposing (Page, PageWithState, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Secrets as Secrets
 import Pages.Url
+import Path
 import Shared
 import Style
 import View exposing (View)
@@ -90,12 +91,12 @@ head :
 head static =
     Seo.summary
         { canonicalUrlOverride = Nothing
-        , siteName = "elm-pages"
+        , siteName = "evanfriedenberg.com"
         , image =
-            { url = Pages.Url.external "TODO"
-            , alt = "elm-pages logo"
-            , dimensions = Nothing
-            , mimeType = Nothing
+            { url = Pages.Url.fromPath (Path.join [ "images", "avatar.webp" ])
+            , alt = "evan avatar"
+            , dimensions = Just { width = 320, height = 320 }
+            , mimeType = Just "image/webp"
             }
         , description = "Personal projects I've made"
         , locale = Nothing
