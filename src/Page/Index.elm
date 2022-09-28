@@ -95,12 +95,10 @@ viewExternalAccount { source, username, url } =
     Element.row
         []
         [ Element.column
-            [ Element.width (Element.fillPortion 1) ]
+            []
             [ Element.text (source ++ ": ") ]
         , Element.column
-            [ Element.width (Element.fillPortion 1)
-            , Font.color Style.link
-            ]
+            [ Font.color Style.link ]
             [ Element.newTabLink
                 []
                 { url = ElmUrl.toString url, label = Element.text username }
@@ -123,12 +121,10 @@ viewExternalAccounts =
         :: Element.row
             []
             [ Element.column
-                [ Element.width (Element.fillPortion 1) ]
+                []
                 [ Element.text "Email: " ]
             , Element.column
-                [ Element.width (Element.fillPortion 1)
-                , Font.color Style.link
-                ]
+                [ Font.color Style.link ]
                 [ mailButton ]
             ]
         :: (List.filterMap
