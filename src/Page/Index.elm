@@ -3,8 +3,10 @@ module Page.Index exposing (Data, Model, Msg, page)
 import DataSource exposing (DataSource)
 import Element
 import Element.Font as Font
+import Element.Region as Region
 import Head
 import Head.Seo as Seo
+import Icons
 import Page exposing (Page, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
@@ -106,9 +108,29 @@ viewExternalAccount { source, username, url } =
         ]
 
 
+mailButton : Element.Element msg
+mailButton =
+    Element.link
+        [ Region.description "send an email" ]
+        { url = "mailto:evan.friedenberg@gmail.com"
+        , label = Icons.mail
+        }
+
+
 viewExternalAccounts : List (Element.Element msg)
 viewExternalAccounts =
     Element.text "You can find me on..."
+        :: Element.row
+            []
+            [ Element.column
+                [ Element.width (Element.fillPortion 1) ]
+                [ Element.text "Email: " ]
+            , Element.column
+                [ Element.width (Element.fillPortion 1)
+                , Font.color Style.link
+                ]
+                [ mailButton ]
+            ]
         :: (List.filterMap
                 toExternalContact
                 externalContactInfo
