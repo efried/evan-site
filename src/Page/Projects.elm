@@ -123,6 +123,12 @@ viewProject project =
         , Border.solid
         , Border.width 2
         , Border.rounded 6
+        , Border.shadow
+            { blur = 6
+            , size = 1
+            , offset = ( 2, 4 )
+            , color = Style.primary
+            }
         ]
         [ Element.row
             [ Font.size 24
@@ -177,7 +183,7 @@ view maybeUrl sharedModel static =
         Element.el
             []
             (Element.wrappedRow
-                [ Element.spacing 10
+                [ Element.spacing 20
                 , Element.padding 20
                 ]
                 (List.map
