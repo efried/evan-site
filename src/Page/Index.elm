@@ -12,6 +12,7 @@ import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
 import Path
 import Shared
+import Simple.Transition as Transition
 import Style
 import Url as ElmUrl
 import View exposing (View)
@@ -143,14 +144,28 @@ wideLayout =
         , Element.centerX
         ]
         [ Element.el
-            [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
-            (Element.text "It's me, Evan!")
-        , Element.image
             [ Element.centerX
-            , Element.width (Element.px 320)
-            , Element.height (Element.px 320)
+            , Font.size 32
+            , Font.bold
+            , Font.color Style.secondary
             ]
-            { src = "images/avatar.webp", description = "Picture of Evan" }
+            (Element.text "It's me, Evan!")
+        , Element.el
+            [ Element.centerX
+            , Element.mouseOver
+                [ Element.rotate (turns 100)
+                ]
+            , Transition.properties
+                [ Transition.transform 181818 []
+                ]
+                |> Element.htmlAttribute
+            ]
+            (Element.image
+                [ Element.width (Element.px 320)
+                , Element.height (Element.px 320)
+                ]
+                { src = "images/avatar.webp", description = "Picture of Evan" }
+            )
         ]
     , Element.column
         [ Element.width (Element.fillPortion 2)
@@ -180,7 +195,12 @@ narrowLayout =
                 ]
                 { src = "images/avatar-small.webp", description = "Picture of Evan" }
             ]
-            [ Element.column [ Element.centerX, Element.spacing 10 ] viewExternalAccounts ]
+            [ Element.column
+                [ Element.centerX
+                , Element.spacing 10
+                ]
+                viewExternalAccounts
+            ]
         )
     ]
 

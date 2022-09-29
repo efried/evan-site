@@ -123,15 +123,25 @@ viewProject project =
         , Border.solid
         , Border.width 2
         , Border.rounded 6
+        , Element.mouseOver
+            [ Border.shadow
+                { blur = 1
+                , size = 1
+                , offset = ( 1, 1 )
+                , color = Style.primary
+                }
+            , Element.moveUp 2
+            , Element.moveLeft 2
+            ]
         ]
         [ Element.row
             [ Font.size 24
             , Font.color Style.secondary
             , Element.width Element.fill
             , Element.spacingXY 0 10
-            , Border.widthEach { bottom = 2, top = 0, left = 0, right = 0 }
             ]
-            [ Element.text project.name ]
+            [ Element.text project.name
+            ]
         , Element.column []
             [ Element.paragraph [ Element.paddingXY 0 10 ]
                 [ Element.text
