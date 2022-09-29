@@ -12,7 +12,9 @@ view : Path -> Element.Element msg
 view currentPath =
     Element.row
         [ Element.width Element.fill
-        , Element.paddingXY 20 20
+        , Element.height (Element.px 60)
+        , Element.paddingXY 20 10
+        , Element.spacingXY 20 0
         , Border.color Style.primary
         , Border.widthEach { bottom = 2, left = 0, right = 0, top = 0 }
         , Font.color Style.primary
@@ -25,15 +27,16 @@ view currentPath =
                 [ Element.alignLeft ]
                 (Element.link
                     []
-                    { url = "/", label = Element.text "Evan Friedenberg" }
+                    { url = "/"
+                    , label =
+                        Element.image
+                            [ Element.width (Element.px 40), Element.height (Element.px 40) ]
+                            { src = "images/avatar-small.webp", description = "Picture of Evan" }
+                    }
                 )
-        , Element.column
+        , Element.el
             [ Element.alignRight ]
-            [ Element.row
-                [ Element.spacingXY 20 0 ]
-                [ link currentPath "projects" "Projects"
-                ]
-            ]
+            (link currentPath "projects" "Projects")
         ]
 
 
