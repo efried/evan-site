@@ -156,7 +156,7 @@ wideLayout =
                 [ Element.rotate (turns 100)
                 ]
             , Transition.properties
-                [ Transition.transform 181818 []
+                [ Transition.transform 181818 [ Transition.linear ]
                 ]
                 |> Element.htmlAttribute
             ]
