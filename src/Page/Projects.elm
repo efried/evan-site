@@ -123,6 +123,16 @@ viewProject project =
         , Border.solid
         , Border.width 2
         , Border.rounded 6
+        , Element.mouseOver
+            [ Border.shadow
+                { blur = 1
+                , size = 1
+                , offset = ( 1, 1 )
+                , color = Style.primary
+                }
+            , Element.moveUp 2
+            , Element.moveLeft 2
+            ]
         ]
         [ Element.row
             [ Font.size 24

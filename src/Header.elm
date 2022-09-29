@@ -3,6 +3,7 @@ module Header exposing (..)
 import Element
 import Element.Border as Border
 import Element.Font as Font
+import Element.Region as Region
 import Pages.Url as Url
 import Path exposing (Path)
 import Style
@@ -24,13 +25,16 @@ view currentPath =
 
           else
             Element.el
-                [ Element.alignLeft ]
+                []
                 (Element.link
                     []
                     { url = "/"
                     , label =
                         Element.image
-                            [ Element.width (Element.px 40), Element.height (Element.px 40) ]
+                            [ Element.width (Element.px 40)
+                            , Element.height (Element.px 40)
+                            , Region.description "Home"
+                            ]
                             { src = "images/avatar-small.webp", description = "Picture of Evan" }
                     }
                 )

@@ -180,7 +180,12 @@ narrowLayout =
                 ]
                 { src = "images/avatar-small.webp", description = "Picture of Evan" }
             ]
-            [ Element.column [ Element.centerX, Element.spacing 10 ] viewExternalAccounts ]
+            [ Element.column
+                [ Element.centerX
+                , Element.spacing 10
+                ]
+                viewExternalAccounts
+            ]
         )
     ]
 
