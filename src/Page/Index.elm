@@ -1,7 +1,9 @@
 module Page.Index exposing (Data, Model, Msg, page)
 
+import Components exposing (picture)
 import DataSource exposing (DataSource)
 import Element
+import Element.Border as Border
 import Element.Font as Font
 import Element.Region as Region
 import Head
@@ -160,11 +162,14 @@ wideLayout =
                 ]
                 |> Element.htmlAttribute
             ]
-            (Element.image
-                [ Element.width (Element.px 320)
-                , Element.height (Element.px 320)
+            (Element.el
+                [ Border.rounded 160
+                , Element.clip
                 ]
-                { src = "images/avatar.webp", description = "Picture of Evan" }
+                (picture
+                    [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
+                    { src = "images/avatar.webp", description = "Picture of Evan", width = 320, height = 320 }
+                )
             )
         ]
     , Element.column
@@ -188,12 +193,16 @@ narrowLayout =
             [ Element.el
                 [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
                 (Element.text "It's me, Evan!")
-            , Element.image
+            , Element.el
                 [ Element.centerX
-                , Element.width (Element.px 200)
-                , Element.height (Element.px 200)
                 ]
-                { src = "images/avatar-small.webp", description = "Picture of Evan" }
+                (Element.el
+                    [ Border.rounded 100, Element.clip ]
+                    (picture
+                        [ { imageType = "image/avif", srcset = "images/avatar-small.avif" } ]
+                        { src = "images/avatar-small.webp", description = "Picture of Evan", width = 200, height = 200 }
+                    )
+                )
             ]
             [ Element.column
                 [ Element.centerX
