@@ -2,7 +2,7 @@ module Page.Projects exposing (Data, Model, Msg, page)
 
 import DataSource exposing (DataSource)
 import DataSource.Http
-import Element
+import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Head
@@ -114,37 +114,37 @@ validateNonEmptyString s =
         Just s
 
 
-viewProject : Project -> Element.Element msg
+viewProject : Project -> Element msg
 viewProject project =
-    Element.column
-        [ Element.width (Element.fill |> Element.minimum 315)
-        , Element.height (Element.px 200)
-        , Element.padding 10
+    column
+        [ width (fill |> minimum 315)
+        , height (px 200)
+        , padding 10
         , Border.solid
         , Border.width 2
         , Border.rounded 6
-        , Element.mouseOver
+        , mouseOver
             [ Border.shadow
                 { blur = 1
                 , size = 1
                 , offset = ( 1, 1 )
                 , color = Style.primary
                 }
-            , Element.moveUp 2
-            , Element.moveLeft 2
+            , moveUp 2
+            , moveLeft 2
             ]
         ]
-        [ Element.row
+        [ row
             [ Font.size 24
             , Font.color Style.secondary
-            , Element.width Element.fill
-            , Element.spacingXY 0 10
+            , width fill
+            , spacingXY 0 10
             ]
-            [ Element.text project.name
+            [ text project.name
             ]
-        , Element.column []
-            [ Element.paragraph [ Element.paddingXY 0 10 ]
-                [ Element.text
+        , column []
+            [ paragraph [ paddingXY 0 10 ]
+                [ text
                     (case project.description of
                         Nothing ->
                             "No description."
@@ -153,23 +153,23 @@ viewProject project =
                             description ++ "."
                     )
                 ]
-            , Element.newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
+            , newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                 { url = project.htmlUrl
-                , label = Element.text "View it on Github"
+                , label = text "View it on Github"
                 }
             , case
                 project.homepage
                     |> Maybe.andThen validateNonEmptyString
               of
                 Nothing ->
-                    Element.none
+                    none
 
                 Just homepage ->
-                    Element.el [ Element.paddingXY 0 10 ]
-                        (Element.newTabLink
-                            [ Font.bold, Font.underline, Font.color Style.link, Element.spacingXY 0 15 ]
+                    el [ paddingXY 0 10 ]
+                        (newTabLink
+                            [ Font.bold, Font.underline, Font.color Style.link, spacingXY 0 15 ]
                             { url = homepage
-                            , label = Element.text "Try it out!"
+                            , label = text "Try it out!"
                             }
                         )
             ]
@@ -184,11 +184,11 @@ view :
 view maybeUrl sharedModel static =
     { title = "Projects"
     , body =
-        Element.el
+        el
             []
-            (Element.wrappedRow
-                [ Element.spacing 10
-                , Element.padding 20
+            (wrappedRow
+                [ spacing 10
+                , padding 20
                 ]
                 (List.map
                     viewProject

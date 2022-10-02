@@ -1,6 +1,6 @@
 module Header exposing (..)
 
-import Element
+import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Region as Region
@@ -9,45 +9,45 @@ import Path exposing (Path)
 import Style
 
 
-view : Path -> Element.Element msg
+view : Path -> Element msg
 view currentPath =
-    Element.row
-        [ Element.width Element.fill
-        , Element.height (Element.px 60)
-        , Element.paddingXY 20 10
-        , Element.spacingXY 20 0
+    row
+        [ width fill
+        , height (px 60)
+        , paddingXY 20 10
+        , spacingXY 20 0
         , Border.color Style.primary
         , Border.widthEach { bottom = 2, left = 0, right = 0, top = 0 }
         , Font.color Style.primary
         ]
         [ if String.isEmpty (Path.toRelative currentPath) then
-            Element.none
+            none
 
           else
-            Element.el
+            el
                 []
                 (Element.link
                     []
                     { url = "/"
                     , label =
-                        Element.image
-                            [ Element.width (Element.px 40)
-                            , Element.height (Element.px 40)
+                        image
+                            [ width (px 40)
+                            , height (px 40)
                             , Region.description "Home"
                             ]
                             { src = "images/avatar-small.webp", description = "Picture of Evan" }
                     }
                 )
-        , Element.el
-            [ Element.alignRight ]
+        , el
+            [ alignRight ]
             (link currentPath "projects" "Projects")
         ]
 
 
-link : Path -> String -> String -> Element.Element msg
+link : Path -> String -> String -> Element msg
 link currentPath pathRoute label =
     let
-        style : List (Element.Attribute msg)
+        style : List (Attribute msg)
         style =
             if Url.toString (Url.fromPath currentPath) == "/" ++ pathRoute then
                 [ Font.underline ]
@@ -58,5 +58,5 @@ link currentPath pathRoute label =
     Element.link
         []
         { url = "/" ++ pathRoute
-        , label = Element.el style (Element.text label)
+        , label = el style (text label)
         }

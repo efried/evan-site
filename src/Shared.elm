@@ -2,7 +2,7 @@ module Shared exposing (Data, Model, Msg(..), SharedMsg(..), template)
 
 import Browser.Navigation
 import DataSource
-import Element
+import Element exposing (..)
 import Element.Background as Background
 import Element.Font as Font
 import Header
@@ -47,7 +47,7 @@ type SharedMsg
 
 type alias Model =
     { showMobileMenu : Bool
-    , device : Element.Device
+    , device : Device
     }
 
 
@@ -85,13 +85,13 @@ init navigationKey flags maybePagePath =
                 Pages.Flags.BrowserFlags bflags ->
                     case decodeValue windowDecoder bflags of
                         Ok window ->
-                            Element.classifyDevice window
+                            classifyDevice window
 
                         Err _ ->
-                            { class = Element.Phone, orientation = Element.Portrait }
+                            { class = Phone, orientation = Portrait }
 
                 Pages.Flags.PreRenderFlags ->
-                    { class = Element.Phone, orientation = Element.Portrait }
+                    { class = Phone, orientation = Portrait }
     in
     ( { showMobileMenu = False
       , device = device
@@ -133,18 +133,18 @@ view :
 view sharedData page model toMsg pageView =
     { title = pageView.title
     , body =
-        Element.layout
+        layout
             [ Background.color Style.white
             ]
-            (Element.column
-                [ Element.width Element.fill
-                , Element.height Element.fill
+            (column
+                [ width fill
+                , height fill
                 ]
                 [ Header.view page.path
-                , Element.el
-                    [ Element.width Element.fill
-                    , Element.height Element.fill
-                    , Element.padding 20
+                , el
+                    [ width fill
+                    , height fill
+                    , padding 20
                     , Font.color Style.primary
                     ]
                     pageView.body

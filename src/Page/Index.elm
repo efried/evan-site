@@ -2,7 +2,7 @@ module Page.Index exposing (Data, Model, Msg, page)
 
 import Components exposing (picture)
 import DataSource exposing (DataSource)
-import Element
+import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Region as Region
@@ -93,40 +93,40 @@ externalContactInfo =
     ]
 
 
-viewExternalAccount : ExternalContact -> Element.Element msg
+viewExternalAccount : ExternalContact -> Element msg
 viewExternalAccount { source, username, url } =
-    Element.row
+    row
         []
-        [ Element.column
+        [ column
             []
-            [ Element.text (source ++ ": ") ]
-        , Element.column
+            [ text (source ++ ": ") ]
+        , column
             [ Font.color Style.link ]
-            [ Element.newTabLink
+            [ newTabLink
                 []
-                { url = ElmUrl.toString url, label = Element.text username }
+                { url = ElmUrl.toString url, label = text username }
             ]
         ]
 
 
-mailButton : Element.Element msg
+mailButton : Element msg
 mailButton =
-    Element.link
+    link
         [ Region.description "send an email" ]
         { url = "mailto:evan.friedenberg@gmail.com"
         , label = Icons.mail
         }
 
 
-viewExternalAccounts : List (Element.Element msg)
+viewExternalAccounts : List (Element msg)
 viewExternalAccounts =
-    Element.text "You can find me on..."
-        :: Element.row
+    text "You can find me on..."
+        :: row
             []
-            [ Element.column
+            [ column
                 []
-                [ Element.text "Email: " ]
-            , Element.column
+                [ text "Email: " ]
+            , column
                 [ Font.color Style.link ]
                 [ mailButton ]
             ]
@@ -137,34 +137,34 @@ viewExternalAccounts =
            )
 
 
-wideLayout : List (Element.Element msg)
+wideLayout : List (Element msg)
 wideLayout =
-    [ Element.column
-        [ Element.width (Element.fillPortion 4)
-        , Element.paddingXY 0 100
-        , Element.spacing 16
-        , Element.centerX
+    [ column
+        [ width (fillPortion 4)
+        , paddingXY 0 100
+        , spacing 16
+        , centerX
         ]
-        [ Element.el
-            [ Element.centerX
+        [ el
+            [ centerX
             , Font.size 32
             , Font.bold
             , Font.color Style.secondary
             ]
-            (Element.text "It's me, Evan!")
-        , Element.el
-            [ Element.centerX
-            , Element.mouseOver
-                [ Element.rotate (turns 100)
+            (text "It's me, Evan!")
+        , el
+            [ centerX
+            , mouseOver
+                [ rotate (turns 100)
                 ]
             , Transition.properties
                 [ Transition.transform 181818 [ Transition.linear ]
                 ]
-                |> Element.htmlAttribute
+                |> htmlAttribute
             ]
-            (Element.el
+            (el
                 [ Border.rounded 160
-                , Element.clip
+                , clip
                 ]
                 (picture
                     [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
@@ -172,41 +172,41 @@ wideLayout =
                 )
             )
         ]
-    , Element.column
-        [ Element.width (Element.fillPortion 2)
-        , Element.paddingXY 0 100
-        , Element.spacing 16
+    , column
+        [ width (fillPortion 2)
+        , paddingXY 0 100
+        , spacing 16
         ]
         viewExternalAccounts
     ]
 
 
-narrowLayout : List (Element.Element msg)
+narrowLayout : List (Element msg)
 narrowLayout =
-    [ Element.column
-        [ Element.width (Element.fillPortion 4)
-        , Element.paddingXY 0 100
-        , Element.spacing 16
-        , Element.centerX
+    [ column
+        [ width (fillPortion 4)
+        , paddingXY 0 100
+        , spacing 16
+        , centerX
         ]
         (List.append
-            [ Element.el
-                [ Element.centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
-                (Element.text "It's me, Evan!")
-            , Element.el
-                [ Element.centerX
+            [ el
+                [ centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+                (text "It's me, Evan!")
+            , el
+                [ centerX
                 ]
-                (Element.el
-                    [ Border.rounded 100, Element.clip ]
+                (el
+                    [ Border.rounded 100, clip ]
                     (picture
                         [ { imageType = "image/avif", srcset = "images/avatar-small.avif" } ]
                         { src = "images/avatar-small.webp", description = "Picture of Evan", width = 200, height = 200 }
                     )
                 )
             ]
-            [ Element.column
-                [ Element.centerX
-                , Element.spacing 10
+            [ column
+                [ centerX
+                , spacing 10
                 ]
                 viewExternalAccounts
             ]
@@ -225,18 +225,18 @@ view maybeUrl sharedModel static =
         let
             pageBody =
                 case sharedModel.device.class of
-                    Element.BigDesktop ->
+                    BigDesktop ->
                         wideLayout
 
-                    Element.Desktop ->
+                    Desktop ->
                         wideLayout
 
                     _ ->
                         narrowLayout
         in
-        Element.row
-            [ Element.width Element.fill
-            , Element.height Element.fill
+        row
+            [ width fill
+            , height fill
             ]
             pageBody
     }
