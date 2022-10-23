@@ -20,28 +20,33 @@ view currentPath =
         , Border.widthEach { bottom = 2, left = 0, right = 0, top = 0 }
         , Font.color Style.primary
         ]
-        [ if String.isEmpty (Path.toRelative currentPath) then
-            none
+        (List.append
+            [ if String.isEmpty (Path.toRelative currentPath) then
+                none
 
-          else
-            el
-                []
-                (Element.link
+              else
+                el
                     []
-                    { url = "/"
-                    , label =
-                        image
-                            [ width (px 40)
-                            , height (px 40)
-                            , Region.description "Home"
-                            ]
-                            { src = "images/avatar-small.webp", description = "Picture of Evan" }
-                    }
-                )
-        , el
-            [ alignRight ]
-            (link currentPath "projects" "Projects")
-        ]
+                    (Element.link
+                        []
+                        { url = "/"
+                        , label =
+                            image
+                                [ width (px 40)
+                                , height (px 40)
+                                , Region.description "Home"
+                                ]
+                                { src = "images/avatar-small.webp", description = "Picture of Evan" }
+                        }
+                    )
+            ]
+            (List.map
+                (el [ alignRight ])
+                [ link currentPath "about" "About"
+                , link currentPath "projects" "Projects"
+                ]
+            )
+        )
 
 
 link : Path -> String -> String -> Element msg
