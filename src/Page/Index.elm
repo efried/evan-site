@@ -291,8 +291,8 @@ narrowLayout =
                 (el
                     [ Border.rounded 100, clip ]
                     (picture
-                        [ { imageType = "image/avif", srcset = "images/avatar-small.avif" } ]
-                        { src = "images/avatar-small.webp", description = "Picture of Evan", width = 200, height = 200 }
+                        [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
+                        { src = "images/avatar.webp", description = "Picture of Evan", width = 200, height = 200 }
                     )
                 )
             ]
