@@ -1,44 +1,48 @@
 module Page.Index exposing (Data, Model, Msg, page)
 
-import Components exposing (picture)
+import Browser.Navigation
+import Components exposing (animatedEl, picture)
 import DataSource exposing (DataSource)
 import Element exposing (..)
 import Element.Border as Border
+import Element.Events as Events
 import Element.Font as Font
 import Element.Region as Region
 import Head
 import Head.Seo as Seo
 import Icons
-import Page exposing (Page, StaticPayload)
+import Page exposing (PageWithState, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
 import Path
 import Shared
-import Simple.Transition as Transition
+import Simple.Animation as Animation
+import Simple.Animation.Property as P
 import Style
 import Url as ElmUrl
 import View exposing (View)
 
 
-type alias Model =
-    ()
 
-
-type alias Msg =
-    Never
+---- PROGRAM ----
 
 
 type alias RouteParams =
     {}
 
 
-page : Page RouteParams Data
+page : PageWithState RouteParams Data Model Msg
 page =
     Page.single
         { head = head
         , data = data
         }
-        |> Page.buildNoState { view = view }
+        |> Page.buildWithLocalState
+            { init = init
+            , subscriptions = subscriptions
+            , update = update
+            , view = view
+            }
 
 
 data : DataSource Data
@@ -70,11 +74,87 @@ type alias Data =
     ()
 
 
+
+---- MODEL ----
+
+
+type Spinner
+    = Spinning
+    | NotSpinning
+
+
+type alias Model =
+    Spinner
+
+
+init :
+    Maybe PageUrl
+    -> Shared.Model
+    -> StaticPayload Data RouteParams
+    -> ( Model, Cmd Msg )
+init maybeUrl sharedModel static =
+    ( NotSpinning, Cmd.none )
+
+
+
+---- SUBSCRIPTIONS ----
+
+
+subscriptions :
+    Maybe PageUrl
+    -> RouteParams
+    -> Path.Path
+    -> Model
+    -> Sub Msg
+subscriptions maybeUrl routeParams path templateModel =
+    Sub.none
+
+
+
+---- UPDATE ----
+
+
+type Msg
+    = StartSpinning
+    | StopSpinning
+
+
+update :
+    PageUrl
+    -> Maybe Browser.Navigation.Key
+    -> Shared.Model
+    -> StaticPayload templateData routeParams
+    -> Msg
+    -> Model
+    -> ( Model, Cmd Msg )
+update url maybeKey sharedModel static templateMsg templateModel =
+    case templateMsg of
+        StartSpinning ->
+            ( Spinning, Cmd.none )
+
+        StopSpinning ->
+            ( NotSpinning, Cmd.none )
+
+
+
+---- VIEW ----
+
+
 type alias ExternalContact =
     { source : String
     , username : String
     , url : ElmUrl.Url
     }
+
+
+spin : Animation.Animation
+spin =
+    Animation.fromTo
+        { duration = 1818
+        , options = [ Animation.loop, Animation.linear ]
+        }
+        [ P.rotate 0 ]
+        [ P.rotate 360 ]
 
 
 toExternalContact : ( String, String, String ) -> Maybe ExternalContact
@@ -137,8 +217,17 @@ viewExternalAccounts =
            )
 
 
-wideLayout : List (Element msg)
-wideLayout =
+wideLayout : Spinner -> List (Element Msg)
+wideLayout spinner =
+    let
+        animation =
+            case spinner of
+                Spinning ->
+                    spin
+
+                NotSpinning ->
+                    Animation.empty
+    in
     [ column
         [ width (fillPortion 4)
         , paddingXY 0 100
@@ -152,15 +241,11 @@ wideLayout =
             , Font.color Style.secondary
             ]
             (text "It's me, Evan!")
-        , el
-            [ centerX
-            , mouseOver
-                [ rotate (turns 100)
-                ]
-            , Transition.properties
-                [ Transition.transform 181818 [ Transition.linear ]
-                ]
-                |> htmlAttribute
+        , animatedEl
+            animation
+            [ Events.onMouseEnter StartSpinning
+            , Events.onMouseLeave StopSpinning
+            , centerX
             ]
             (el
                 [ Border.rounded 160
@@ -217,19 +302,20 @@ narrowLayout =
 view :
     Maybe PageUrl
     -> Shared.Model
+    -> Model
     -> StaticPayload Data RouteParams
     -> View Msg
-view maybeUrl sharedModel static =
+view maybeUrl sharedModel model static =
     { title = "Home"
     , body =
         let
             pageBody =
                 case sharedModel.device.class of
                     BigDesktop ->
-                        wideLayout
+                        wideLayout model
 
                     Desktop ->
-                        wideLayout
+                        wideLayout model
 
                     _ ->
                         narrowLayout
