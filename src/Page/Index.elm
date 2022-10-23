@@ -276,7 +276,7 @@ narrowLayout : Element msg
 narrowLayout =
     column
         [ width (fillPortion 4)
-        , paddingXY 0 100
+        , paddingXY 0 50
         , spacing 16
         , centerX
         , Element.htmlAttribute (Attr.class "responsive-mobile")
