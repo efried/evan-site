@@ -10,6 +10,7 @@ import Element.Font as Font
 import Element.Region as Region
 import Head
 import Head.Seo as Seo
+import Html.Attributes as Attr
 import Icons
 import Page exposing (PageWithState, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
@@ -217,7 +218,7 @@ viewExternalAccounts =
            )
 
 
-wideLayout : Spinner -> List (Element Msg)
+wideLayout : Spinner -> Element Msg
 wideLayout spinner =
     let
         animation =
@@ -228,51 +229,57 @@ wideLayout spinner =
                 NotSpinning ->
                     Animation.empty
     in
-    [ column
-        [ width (fillPortion 4)
-        , paddingXY 0 100
-        , spacing 16
-        , centerX
+    row
+        [ width fill
+        , height fill
+        , Element.htmlAttribute (Attr.class "responsive-desktop")
         ]
-        [ el
-            [ centerX
-            , Font.size 32
-            , Font.bold
-            , Font.color Style.secondary
-            ]
-            (text "It's me, Evan!")
-        , animatedEl
-            animation
-            [ Events.onMouseEnter StartSpinning
-            , Events.onMouseLeave StopSpinning
+        [ column
+            [ width (fillPortion 4)
+            , paddingXY 0 100
+            , spacing 16
             , centerX
             ]
-            (el
-                [ Border.rounded 160
-                , clip
+            [ el
+                [ centerX
+                , Font.size 32
+                , Font.bold
+                , Font.color Style.secondary
                 ]
-                (picture
-                    [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
-                    { src = "images/avatar.webp", description = "Picture of Evan", width = 320, height = 320 }
+                (text "It's me, Evan!")
+            , animatedEl
+                animation
+                [ Events.onMouseEnter StartSpinning
+                , Events.onMouseLeave StopSpinning
+                , centerX
+                ]
+                (el
+                    [ Border.rounded 160
+                    , clip
+                    ]
+                    (picture
+                        [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
+                        { src = "images/avatar.webp", description = "Picture of Evan", width = 320, height = 320 }
+                    )
                 )
-            )
+            ]
+        , column
+            [ width (fillPortion 2)
+            , paddingXY 0 100
+            , spacing 16
+            ]
+            viewExternalAccounts
         ]
-    , column
-        [ width (fillPortion 2)
-        , paddingXY 0 100
-        , spacing 16
-        ]
-        viewExternalAccounts
-    ]
 
 
-narrowLayout : List (Element msg)
+narrowLayout : Element msg
 narrowLayout =
-    [ column
+    column
         [ width (fillPortion 4)
         , paddingXY 0 100
         , spacing 16
         , centerX
+        , Element.htmlAttribute (Attr.class "responsive-mobile")
         ]
         (List.append
             [ el
@@ -296,7 +303,6 @@ narrowLayout =
                 viewExternalAccounts
             ]
         )
-    ]
 
 
 view :
@@ -308,21 +314,9 @@ view :
 view maybeUrl sharedModel model static =
     { title = "Home"
     , body =
-        let
-            pageBody =
-                case sharedModel.device.class of
-                    BigDesktop ->
-                        wideLayout model
-
-                    Desktop ->
-                        wideLayout model
-
-                    _ ->
-                        narrowLayout
-        in
         row
             [ width fill
             , height fill
             ]
-            pageBody
+            [ wideLayout model, narrowLayout ]
     }
