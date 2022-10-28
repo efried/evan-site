@@ -228,6 +228,19 @@ wideLayout spinner =
 
                 NotSpinning ->
                     Animation.empty
+
+        recordImage =
+            case spinner of
+                Spinning ->
+                    image
+                        [ width (px 320)
+                        , height (px 320)
+                        , Region.description "Record"
+                        ]
+                        { src = "images/record-lines.svg", description = "Record lines" }
+
+                NotSpinning ->
+                    Element.none
     in
     row
         [ width fill
@@ -256,6 +269,7 @@ wideLayout spinner =
                 (el
                     [ Border.rounded 160
                     , clip
+                    , inFront recordImage
                     ]
                     (picture
                         [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
