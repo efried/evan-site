@@ -7,9 +7,6 @@ export default {
     console.log("App loaded", app);
   },
   flags: function () {
-    return {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    }
+    return "You can decode this in Shared.elm using Json.Decode.string!";
   },
 };

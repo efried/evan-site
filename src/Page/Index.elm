@@ -1,44 +1,49 @@
 module Page.Index exposing (Data, Model, Msg, page)
 
-import Components exposing (picture)
+import Browser.Navigation
+import Components exposing (animatedEl, picture)
 import DataSource exposing (DataSource)
 import Element exposing (..)
 import Element.Border as Border
+import Element.Events as Events
 import Element.Font as Font
 import Element.Region as Region
 import Head
 import Head.Seo as Seo
+import Html.Attributes as Attr
 import Icons
-import Page exposing (Page, StaticPayload)
+import Page exposing (PageWithState, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
 import Path
 import Shared
-import Simple.Transition as Transition
+import Simple.Animation as Animation
+import Simple.Animation.Property as P
 import Style
 import Url as ElmUrl
 import View exposing (View)
 
 
-type alias Model =
-    ()
 
-
-type alias Msg =
-    Never
+---- PROGRAM ----
 
 
 type alias RouteParams =
     {}
 
 
-page : Page RouteParams Data
+page : PageWithState RouteParams Data Model Msg
 page =
     Page.single
         { head = head
         , data = data
         }
-        |> Page.buildNoState { view = view }
+        |> Page.buildWithLocalState
+            { init = init
+            , subscriptions = subscriptions
+            , update = update
+            , view = view
+            }
 
 
 data : DataSource Data
@@ -70,11 +75,87 @@ type alias Data =
     ()
 
 
+
+---- MODEL ----
+
+
+type Spinner
+    = Spinning
+    | NotSpinning
+
+
+type alias Model =
+    Spinner
+
+
+init :
+    Maybe PageUrl
+    -> Shared.Model
+    -> StaticPayload Data RouteParams
+    -> ( Model, Cmd Msg )
+init maybeUrl sharedModel static =
+    ( NotSpinning, Cmd.none )
+
+
+
+---- SUBSCRIPTIONS ----
+
+
+subscriptions :
+    Maybe PageUrl
+    -> RouteParams
+    -> Path.Path
+    -> Model
+    -> Sub Msg
+subscriptions maybeUrl routeParams path templateModel =
+    Sub.none
+
+
+
+---- UPDATE ----
+
+
+type Msg
+    = StartSpinning
+    | StopSpinning
+
+
+update :
+    PageUrl
+    -> Maybe Browser.Navigation.Key
+    -> Shared.Model
+    -> StaticPayload templateData routeParams
+    -> Msg
+    -> Model
+    -> ( Model, Cmd Msg )
+update url maybeKey sharedModel static templateMsg templateModel =
+    case templateMsg of
+        StartSpinning ->
+            ( Spinning, Cmd.none )
+
+        StopSpinning ->
+            ( NotSpinning, Cmd.none )
+
+
+
+---- VIEW ----
+
+
 type alias ExternalContact =
     { source : String
     , username : String
     , url : ElmUrl.Url
     }
+
+
+spin : Animation.Animation
+spin =
+    Animation.fromTo
+        { duration = 1818
+        , options = [ Animation.loop, Animation.linear ]
+        }
+        [ P.rotate 0 ]
+        [ P.rotate 360 ]
 
 
 toExternalContact : ( String, String, String ) -> Maybe ExternalContact
@@ -137,57 +218,82 @@ viewExternalAccounts =
            )
 
 
-wideLayout : List (Element msg)
-wideLayout =
-    [ column
-        [ width (fillPortion 4)
-        , paddingXY 0 100
-        , spacing 16
-        , centerX
+wideLayout : Spinner -> Element Msg
+wideLayout spinner =
+    let
+        animation =
+            case spinner of
+                Spinning ->
+                    spin
+
+                NotSpinning ->
+                    Animation.empty
+
+        recordImage =
+            case spinner of
+                Spinning ->
+                    image
+                        [ width (px 320)
+                        , height (px 320)
+                        , Region.description "Record"
+                        ]
+                        { src = "images/record-lines.svg", description = "Record lines" }
+
+                NotSpinning ->
+                    Element.none
+    in
+    row
+        [ width fill
+        , height fill
+        , Element.htmlAttribute (Attr.class "responsive-desktop")
         ]
-        [ el
-            [ centerX
-            , Font.size 32
-            , Font.bold
-            , Font.color Style.secondary
+        [ column
+            [ width (fillPortion 4)
+            , paddingXY 0 100
+            , spacing 16
+            , centerX
             ]
-            (text "It's me, Evan!")
-        , el
-            [ centerX
-            , mouseOver
-                [ rotate (turns 100)
+            [ el
+                [ centerX
+                , Font.size 32
+                , Font.bold
+                , Font.color Style.secondary
                 ]
-            , Transition.properties
-                [ Transition.transform 181818 [ Transition.linear ]
+                (text "It's me, Evan!")
+            , animatedEl
+                animation
+                [ Events.onMouseEnter StartSpinning
+                , Events.onMouseLeave StopSpinning
+                , centerX
                 ]
-                |> htmlAttribute
-            ]
-            (el
-                [ Border.rounded 160
-                , clip
-                ]
-                (picture
-                    [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
-                    { src = "images/avatar.webp", description = "Picture of Evan", width = 320, height = 320 }
+                (el
+                    [ Border.rounded 160
+                    , clip
+                    , inFront recordImage
+                    ]
+                    (picture
+                        [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
+                        { src = "images/avatar.webp", description = "Picture of Evan", width = 320, height = 320 }
+                    )
                 )
-            )
+            ]
+        , column
+            [ width (fillPortion 2)
+            , paddingXY 0 100
+            , spacing 16
+            ]
+            viewExternalAccounts
         ]
-    , column
-        [ width (fillPortion 2)
-        , paddingXY 0 100
-        , spacing 16
-        ]
-        viewExternalAccounts
-    ]
 
 
-narrowLayout : List (Element msg)
+narrowLayout : Element msg
 narrowLayout =
-    [ column
+    column
         [ width (fillPortion 4)
-        , paddingXY 0 100
+        , paddingXY 0 50
         , spacing 16
         , centerX
+        , Element.htmlAttribute (Attr.class "responsive-mobile")
         ]
         (List.append
             [ el
@@ -199,8 +305,8 @@ narrowLayout =
                 (el
                     [ Border.rounded 100, clip ]
                     (picture
-                        [ { imageType = "image/avif", srcset = "images/avatar-small.avif" } ]
-                        { src = "images/avatar-small.webp", description = "Picture of Evan", width = 200, height = 200 }
+                        [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
+                        { src = "images/avatar.webp", description = "Picture of Evan", width = 200, height = 200 }
                     )
                 )
             ]
@@ -211,32 +317,20 @@ narrowLayout =
                 viewExternalAccounts
             ]
         )
-    ]
 
 
 view :
     Maybe PageUrl
     -> Shared.Model
+    -> Model
     -> StaticPayload Data RouteParams
     -> View Msg
-view maybeUrl sharedModel static =
+view maybeUrl sharedModel model static =
     { title = "Home"
     , body =
-        let
-            pageBody =
-                case sharedModel.device.class of
-                    BigDesktop ->
-                        wideLayout
-
-                    Desktop ->
-                        wideLayout
-
-                    _ ->
-                        narrowLayout
-        in
         row
             [ width fill
             , height fill
             ]
-            pageBody
+            [ wideLayout model, narrowLayout ]
     }

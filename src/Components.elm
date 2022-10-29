@@ -1,8 +1,10 @@
-module Components exposing (picture)
+module Components exposing (animatedEl, picture)
 
-import Element
+import Element exposing (Element)
 import Html as Html exposing (Html)
 import Html.Attributes exposing (alt, attribute, height, src, style, width)
+import Simple.Animation exposing (Animation)
+import Simple.Animation.Animated
 
 
 type alias Source =
@@ -38,3 +40,17 @@ picture sources image =
             ]
         )
         |> Element.html
+
+
+animatedUi : (List (Element.Attribute msg) -> children -> Element msg) -> Animation -> List (Element.Attribute msg) -> children -> Element msg
+animatedUi =
+    Simple.Animation.Animated.ui
+        { behindContent = Element.behindContent
+        , htmlAttribute = Element.htmlAttribute
+        , html = Element.html
+        }
+
+
+animatedEl : Animation -> List (Element.Attribute msg) -> Element msg -> Element msg
+animatedEl =
+    animatedUi Element.el
