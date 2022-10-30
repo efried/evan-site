@@ -5,6 +5,19 @@ import DataSource.Http
 import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
+import Github.Enum.OrderDirection exposing (OrderDirection(..))
+import Github.Enum.RepositoryAffiliation exposing (RepositoryAffiliation(..))
+import Github.Enum.RepositoryOrderField exposing (RepositoryOrderField(..))
+import Github.Enum.RepositoryPrivacy exposing (RepositoryPrivacy(..))
+import Github.Object
+import Github.Object.Repository
+import Github.Object.RepositoryConnection
+import Github.Object.RepositoryEdge
+import Github.Object.User
+import Github.Query as Query
+import Github.Scalar
+import Graphql.OptionalArgument exposing (OptionalArgument(..))
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Head
 import Head.Seo as Seo
 import OptimizedDecoder
@@ -13,6 +26,7 @@ import Pages.PageUrl exposing (PageUrl)
 import Pages.Secrets as Secrets
 import Pages.Url
 import Path
+import Request
 import Shared
 import Style
 import View exposing (View)
@@ -43,9 +57,12 @@ type alias Project =
     { name : String
     , description : Maybe String
     , homepage : Maybe String
-    , forked : Bool
-    , archived : Bool
     , htmlUrl : String
+    }
+
+
+type alias GithubUser =
+    { repositories : List Project
     }
 
 
@@ -53,35 +70,61 @@ type alias Data =
     List Project
 
 
+repositorySelection : SelectionSet Project Github.Object.Repository
+repositorySelection =
+    SelectionSet.map4 Project
+        Github.Object.Repository.name
+        Github.Object.Repository.description
+        (Github.Object.Repository.homepageUrl
+            |> SelectionSet.map
+                (Maybe.map toUriString)
+        )
+        (Github.Object.Repository.url
+            |> SelectionSet.map toUriString
+        )
+
+
+repositories : SelectionSet (List Project) Github.Object.User
+repositories =
+    Github.Object.User.repositories
+        (\optionals ->
+            { optionals
+                | first = Present 100
+                , orderBy = Present { field = Name, direction = Asc }
+                , ownerAffiliations = Present [ Just Owner ]
+                , affiliations = Present [ Just Owner ]
+                , privacy = Present Public
+                , isFork = Present False
+            }
+        )
+        (Github.Object.RepositoryConnection.edges
+            (Github.Object.RepositoryEdge.node
+                repositorySelection
+                |> SelectionSet.nonNullOrFail
+            )
+            |> SelectionSet.nonNullOrFail
+            |> SelectionSet.nonNullElementsOrFail
+        )
+
+
+query =
+    Query.user { login = "efried" } <|
+        (SelectionSet.succeed GithubUser |> with repositories)
+
+
 data : DataSource Data
 data =
-    DataSource.Http.request
-        (Secrets.succeed
-            (\apiKey ->
-                { url = "https://api.github.com/users/efried/repos?type=owner"
-                , method = "GET"
-                , headers = [ ( "Accept", "application/vnd.github+json" ), ( "Authorization", "token " ++ apiKey ) ]
-                , body = DataSource.Http.emptyBody
-                }
-            )
-            |> Secrets.with "API_KEY"
-        )
-        (OptimizedDecoder.list
-            (OptimizedDecoder.map6
-                Project
-                (OptimizedDecoder.field "name" OptimizedDecoder.string)
-                (OptimizedDecoder.field "description" (OptimizedDecoder.nullable OptimizedDecoder.string))
-                (OptimizedDecoder.field "homepage" (OptimizedDecoder.nullable OptimizedDecoder.string))
-                (OptimizedDecoder.field "fork" OptimizedDecoder.bool)
-                (OptimizedDecoder.field "archived" OptimizedDecoder.bool)
-                (OptimizedDecoder.field "html_url" OptimizedDecoder.string)
-            )
-        )
+    Request.staticGraphqlRequest
+        "https://api.github.com/graphql"
+        query
         |> DataSource.map
-            (List.filter
-                (\project ->
-                    project.forked == False && project.archived == False
-                )
+            (\userMaybe ->
+                case userMaybe of
+                    Nothing ->
+                        []
+
+                    Just user ->
+                        user.repositories
             )
 
 
@@ -105,13 +148,8 @@ head static =
         |> Seo.website
 
 
-validateNonEmptyString : String -> Maybe String
-validateNonEmptyString s =
-    if String.isEmpty s then
-        Nothing
 
-    else
-        Just s
+---- VIEW ----
 
 
 viewProject : Project -> Element msg
@@ -196,3 +234,21 @@ view maybeUrl sharedModel static =
                 )
             )
     }
+
+
+
+---- UTILS ----
+
+
+toUriString : Github.Scalar.Uri -> String
+toUriString (Github.Scalar.Uri uri) =
+    uri
+
+
+validateNonEmptyString : String -> Maybe String
+validateNonEmptyString s =
+    if String.isEmpty s then
+        Nothing
+
+    else
+        Just s
