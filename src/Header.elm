@@ -35,7 +35,11 @@ view currentPath =
                             , height (px 40)
                             , Region.description "Home"
                             ]
-                            { src = "images/avatar-small.webp", description = "Picture of Evan" }
+                            { src =
+                                Url.fromPath (Path.join [ "images", "avatar-small.webp" ])
+                                    |> Url.toString
+                            , description = "Picture of Evan"
+                            }
                     }
                 )
         , el
