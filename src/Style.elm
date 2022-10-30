@@ -1,4 +1,4 @@
-module Style exposing (..)
+module Style exposing (link, primary, secondary, white)
 
 import Element exposing (Color, rgb255)
 

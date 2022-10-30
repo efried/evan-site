@@ -1,4 +1,4 @@
-module Page.Index exposing (Data, Model, Msg, page)
+module Page.Index exposing (Data, Model, Msg, RouteParams, page)
 
 import Browser.Navigation
 import Components exposing (animatedEl, picture)
