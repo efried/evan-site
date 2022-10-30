@@ -5,22 +5,25 @@ import DataSource.Http
 import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
+import Github.Enum.LanguageOrderField exposing (LanguageOrderField(..))
 import Github.Enum.OrderDirection exposing (OrderDirection(..))
 import Github.Enum.RepositoryAffiliation exposing (RepositoryAffiliation(..))
 import Github.Enum.RepositoryOrderField exposing (RepositoryOrderField(..))
 import Github.Enum.RepositoryPrivacy exposing (RepositoryPrivacy(..))
 import Github.Object
-import Github.Object.Repository
+import Github.Object.Language as Language
+import Github.Object.LanguageConnection
+import Github.Object.LanguageEdge
+import Github.Object.Repository as Repository
 import Github.Object.RepositoryConnection
 import Github.Object.RepositoryEdge
-import Github.Object.User
+import Github.Object.User as User
 import Github.Query as Query
 import Github.Scalar
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Head
 import Head.Seo as Seo
-import OptimizedDecoder
 import Page exposing (Page, PageWithState, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Secrets as Secrets
@@ -58,6 +61,7 @@ type alias Project =
     , description : Maybe String
     , homepage : Maybe String
     , htmlUrl : String
+    , languages : List String
     }
 
 
@@ -70,23 +74,36 @@ type alias Data =
     List Project
 
 
+languagesSelection : SelectionSet (List String) Github.Object.Repository
+languagesSelection =
+    Repository.languages
+        (\optionals ->
+            { optionals
+                | first = Present 10
+                , orderBy = Present { field = Size, direction = Desc }
+            }
+        )
+        (Github.Object.LanguageConnection.edges
+            (Github.Object.LanguageEdge.node Language.name)
+            |> SelectionSet.nonNullOrFail
+            |> SelectionSet.nonNullElementsOrFail
+        )
+        |> SelectionSet.nonNullOrFail
+
+
 repositorySelection : SelectionSet Project Github.Object.Repository
 repositorySelection =
-    SelectionSet.map4 Project
-        Github.Object.Repository.name
-        Github.Object.Repository.description
-        (Github.Object.Repository.homepageUrl
-            |> SelectionSet.map
-                (Maybe.map toUriString)
-        )
-        (Github.Object.Repository.url
-            |> SelectionSet.map toUriString
-        )
+    SelectionSet.map5 Project
+        Repository.name
+        Repository.description
+        (Repository.homepageUrl |> SelectionSet.map (Maybe.map toUriString))
+        (Repository.url |> SelectionSet.map toUriString)
+        languagesSelection
 
 
 repositories : SelectionSet (List Project) Github.Object.User
 repositories =
-    Github.Object.User.repositories
+    User.repositories
         (\optionals ->
             { optionals
                 | first = Present 100
@@ -156,7 +173,7 @@ viewProject : Project -> Element msg
 viewProject project =
     column
         [ width (fill |> minimum 315)
-        , height (px 200)
+        , height (fill |> minimum 200 |> maximum 250)
         , padding 10
         , Border.solid
         , Border.width 2
@@ -181,7 +198,7 @@ viewProject project =
             [ text project.name
             ]
         , column []
-            [ paragraph [ paddingXY 0 10 ]
+            [ paragraph [ paddingEach { top = 10, right = 0, bottom = 0, left = 0 } ]
                 [ text
                     (case project.description of
                         Nothing ->
@@ -191,6 +208,7 @@ viewProject project =
                             description ++ "."
                     )
                 ]
+            , paragraph [ paddingXY 0 10 ] [ text ("Languages: " ++ String.join ", " project.languages) ]
             , newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                 { url = project.htmlUrl
                 , label = text "View it on Github"
