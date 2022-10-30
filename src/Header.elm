@@ -1,4 +1,4 @@
-module Header exposing (..)
+module Header exposing (view)
 
 import Element exposing (..)
 import Element.Border as Border

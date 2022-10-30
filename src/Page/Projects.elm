@@ -1,7 +1,6 @@
-module Page.Projects exposing (Data, Model, Msg, page)
+module Page.Projects exposing (Data, Model, Msg, Project, RouteParams, page)
 
 import DataSource exposing (DataSource)
-import DataSource.Http
 import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
@@ -24,9 +23,8 @@ import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Head
 import Head.Seo as Seo
-import Page exposing (Page, PageWithState, StaticPayload)
+import Page exposing (Page, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
-import Pages.Secrets as Secrets
 import Pages.Url
 import Path
 import Request
