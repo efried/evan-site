@@ -175,7 +175,7 @@ head static =
 
 viewLanguages : List Language -> Element msg
 viewLanguages languages =
-    paragraph [ paddingXY 0 10 ]
+    paragraph [ paddingEach { top = 10, bottom = 16, left = 0, right = 0 } ]
         (List.map
             (\language ->
                 let
@@ -187,7 +187,11 @@ viewLanguages languages =
                             Nothing ->
                                 Style.primary
                 in
-                el [ Font.color color ] (text language.name)
+                el
+                    [ Border.widthEach { top = 0, bottom = 4, left = 0, right = 0 }
+                    , Border.color color
+                    ]
+                    (text language.name)
             )
             languages
             |> List.intersperse

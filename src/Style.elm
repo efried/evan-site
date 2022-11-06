@@ -16,10 +16,11 @@ hexStringParser =
 hexStringToColor : String -> Maybe Color
 hexStringToColor hex =
     run hexStringParser hex
+        |> Result.map String.toLower
         |> Result.toMaybe
         |> Maybe.map
             (\hexes ->
-                case String.toList hexes of
+                case String.toLower hexes |> String.toList of
                     r1 :: r2 :: g1 :: g2 :: b1 :: b2 :: [] ->
                         let
                             joinToHex : Char -> Char -> Maybe Int
