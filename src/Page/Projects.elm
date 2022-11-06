@@ -54,12 +54,18 @@ page =
         |> Page.buildNoState { view = view }
 
 
+type alias Language =
+    { name : String
+    , color : Maybe String
+    }
+
+
 type alias Project =
     { name : String
     , description : Maybe String
     , homepage : Maybe String
     , htmlUrl : String
-    , languages : List String
+    , languages : List Language
     }
 
 
@@ -72,7 +78,7 @@ type alias Data =
     List Project
 
 
-languagesSelection : SelectionSet (List String) Github.Object.Repository
+languagesSelection : SelectionSet (List Language) Github.Object.Repository
 languagesSelection =
     Repository.languages
         (\optionals ->
@@ -82,7 +88,7 @@ languagesSelection =
             }
         )
         (Github.Object.LanguageConnection.edges
-            (Github.Object.LanguageEdge.node Language.name)
+            (Github.Object.LanguageEdge.node (SelectionSet.map2 Language Language.name Language.color))
             |> SelectionSet.nonNullOrFail
             |> SelectionSet.nonNullElementsOrFail
         )
@@ -163,10 +169,6 @@ head static =
         |> Seo.website
 
 
-
----- VIEW ----
-
-
 viewProject : Project -> Element msg
 viewProject project =
     column
@@ -206,7 +208,7 @@ viewProject project =
                             description ++ "."
                     )
                 ]
-            , paragraph [ paddingXY 0 10 ] [ text ("Languages: " ++ String.join ", " project.languages) ]
+            , paragraph [ paddingXY 0 10 ] [ text ("Languages: " ++ String.join ", " (List.map .name project.languages)) ]
             , newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                 { url = project.htmlUrl
                 , label = text "View it on Github"
