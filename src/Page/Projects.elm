@@ -29,7 +29,7 @@ import Pages.Url
 import Path
 import Request
 import Shared
-import Style
+import Style exposing (hexStringToColor)
 import View exposing (View)
 
 
@@ -56,7 +56,7 @@ page =
 
 type alias Language =
     { name : String
-    , color : Maybe String
+    , color : Maybe Color
     }
 
 
@@ -90,7 +90,11 @@ languagesSelection =
         (Github.Object.LanguageConnection.nodes
             (SelectionSet.succeed Language
                 |> SelectionSet.with Language.name
-                |> SelectionSet.with Language.color
+                |> SelectionSet.with
+                    (Language.color
+                        |> SelectionSet.map (Maybe.map hexStringToColor)
+                        |> SelectionSet.nonNullOrFail
+                    )
             )
             |> SelectionSet.nonNullOrFail
         )
@@ -169,6 +173,28 @@ head static =
         |> Seo.website
 
 
+viewLanguages : List Language -> Element msg
+viewLanguages languages =
+    paragraph [ paddingXY 0 10 ]
+        (List.map
+            (\language ->
+                let
+                    color =
+                        case language.color of
+                            Just clr ->
+                                clr
+
+                            Nothing ->
+                                Style.primary
+                in
+                el [ Font.color color ] (text language.name)
+            )
+            languages
+            |> List.intersperse
+                (text ", ")
+        )
+
+
 viewProject : Project -> Element msg
 viewProject project =
     column
@@ -208,7 +234,7 @@ viewProject project =
                             description ++ "."
                     )
                 ]
-            , paragraph [ paddingXY 0 10 ] [ text ("Languages: " ++ String.join ", " (List.map .name project.languages)) ]
+            , viewLanguages project.languages
             , newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                 { url = project.htmlUrl
                 , label = text "View it on Github"
