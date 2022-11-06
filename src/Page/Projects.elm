@@ -29,7 +29,7 @@ import Pages.Url
 import Path
 import Request
 import Shared
-import Style
+import Style exposing (hexStringToColor)
 import View exposing (View)
 
 
@@ -54,12 +54,18 @@ page =
         |> Page.buildNoState { view = view }
 
 
+type alias Language =
+    { name : String
+    , color : Maybe Color
+    }
+
+
 type alias Project =
     { name : String
     , description : Maybe String
     , homepage : Maybe String
     , htmlUrl : String
-    , languages : List String
+    , languages : List Language
     }
 
 
@@ -72,7 +78,7 @@ type alias Data =
     List Project
 
 
-languagesSelection : SelectionSet (List String) Github.Object.Repository
+languagesSelection : SelectionSet (List Language) Github.Object.Repository
 languagesSelection =
     Repository.languages
         (\optionals ->
@@ -82,11 +88,18 @@ languagesSelection =
             }
         )
         (Github.Object.LanguageConnection.nodes
-            Language.name
+            (SelectionSet.succeed Language
+                |> SelectionSet.with Language.name
+                |> SelectionSet.with
+                    (Language.color
+                        |> SelectionSet.map (Maybe.map hexStringToColor)
+                        |> SelectionSet.nonNullOrFail
+                    )
+            )
             |> SelectionSet.nonNullOrFail
-            |> SelectionSet.nonNullElementsOrFail
         )
         |> SelectionSet.nonNullOrFail
+        |> SelectionSet.nonNullElementsOrFail
 
 
 repositorySelection : SelectionSet Project Github.Object.Repository
@@ -160,8 +173,30 @@ head static =
         |> Seo.website
 
 
+viewLanguages : List Language -> Element msg
+viewLanguages languages =
+    paragraph [ paddingEach { top = 10, bottom = 16, left = 0, right = 0 } ]
+        (List.map
+            (\language ->
+                let
+                    color =
+                        case language.color of
+                            Just clr ->
+                                clr
 
----- VIEW ----
+                            Nothing ->
+                                Style.primary
+                in
+                el
+                    [ Border.widthEach { top = 0, bottom = 4, left = 0, right = 0 }
+                    , Border.color color
+                    ]
+                    (text language.name)
+            )
+            languages
+            |> List.intersperse
+                (text ", ")
+        )
 
 
 viewProject : Project -> Element msg
@@ -203,7 +238,7 @@ viewProject project =
                             description ++ "."
                     )
                 ]
-            , paragraph [ paddingXY 0 10 ] [ text ("Languages: " ++ String.join ", " project.languages) ]
+            , viewLanguages project.languages
             , newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                 { url = project.htmlUrl
                 , label = text "View it on Github"
