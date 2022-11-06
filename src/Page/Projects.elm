@@ -87,22 +87,25 @@ languagesSelection =
                 , orderBy = Present { field = Size, direction = Desc }
             }
         )
-        (Github.Object.LanguageConnection.edges
-            (Github.Object.LanguageEdge.node (SelectionSet.map2 Language Language.name Language.color))
+        (Github.Object.LanguageConnection.nodes
+            (SelectionSet.succeed Language
+                |> SelectionSet.with Language.name
+                |> SelectionSet.with Language.color
+            )
             |> SelectionSet.nonNullOrFail
-            |> SelectionSet.nonNullElementsOrFail
         )
         |> SelectionSet.nonNullOrFail
+        |> SelectionSet.nonNullElementsOrFail
 
 
 repositorySelection : SelectionSet Project Github.Object.Repository
 repositorySelection =
-    SelectionSet.map5 Project
-        Repository.name
-        Repository.description
-        (Repository.homepageUrl |> SelectionSet.map (Maybe.map toUriString))
-        (Repository.url |> SelectionSet.map toUriString)
-        languagesSelection
+    SelectionSet.succeed Project
+        |> SelectionSet.with Repository.name
+        |> SelectionSet.with Repository.description
+        |> SelectionSet.with (SelectionSet.map (Maybe.map toUriString) Repository.homepageUrl)
+        |> SelectionSet.with (SelectionSet.map toUriString Repository.url)
+        |> SelectionSet.with languagesSelection
 
 
 repositories : SelectionSet (List Project) Github.Object.User
@@ -118,11 +121,8 @@ repositories =
                 , isFork = Present False
             }
         )
-        (Github.Object.RepositoryConnection.edges
-            (Github.Object.RepositoryEdge.node
-                repositorySelection
-                |> SelectionSet.nonNullOrFail
-            )
+        (Github.Object.RepositoryConnection.nodes
+            repositorySelection
             |> SelectionSet.nonNullOrFail
             |> SelectionSet.nonNullElementsOrFail
         )
