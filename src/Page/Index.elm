@@ -151,7 +151,7 @@ type alias ExternalContact =
 spin : Animation.Animation
 spin =
     Animation.fromTo
-        { duration = 1818
+        { duration = round (1 / 33 * 60000)
         , options = [ Animation.loop, Animation.linear ]
         }
         [ P.rotate 0 ]
