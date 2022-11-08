@@ -12,10 +12,8 @@ import Github.Enum.RepositoryPrivacy exposing (RepositoryPrivacy(..))
 import Github.Object
 import Github.Object.Language as Language
 import Github.Object.LanguageConnection
-import Github.Object.LanguageEdge
 import Github.Object.Repository as Repository
 import Github.Object.RepositoryConnection
-import Github.Object.RepositoryEdge
 import Github.Object.User as User
 import Github.Query as Query
 import Github.Scalar
