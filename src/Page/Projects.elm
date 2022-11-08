@@ -92,7 +92,7 @@ languagesSelection =
                 |> SelectionSet.with Language.name
                 |> SelectionSet.with
                     (Language.color
-                        |> SelectionSet.map (Maybe.map hexStringToColor)
+                        |> SelectionSet.map (Maybe.map (String.toLower >> hexStringToColor))
                         |> SelectionSet.nonNullOrFail
                     )
             )

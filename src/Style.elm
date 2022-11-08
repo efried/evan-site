@@ -16,7 +16,6 @@ hexStringParser =
 hexStringToColor : String -> Maybe Color
 hexStringToColor hex =
     run hexStringParser hex
-        |> Result.map String.toLower
         |> Result.toMaybe
         |> Maybe.map
             (\hexes ->
