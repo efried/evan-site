@@ -151,7 +151,7 @@ type alias ExternalContact =
 spin : Animation.Animation
 spin =
     Animation.fromTo
-        { duration = 1818
+        { duration = round (1 / 33 * 60000)
         , options = [ Animation.loop, Animation.linear ]
         }
         [ P.rotate 0 ]
@@ -178,22 +178,19 @@ viewExternalAccount : ExternalContact -> Element msg
 viewExternalAccount { source, username, url } =
     row
         []
-        [ column
-            []
-            [ text (source ++ ": ") ]
-        , column
+        [ text (source ++ ": ")
+        , newTabLink
             [ Font.color Style.link ]
-            [ newTabLink
-                []
-                { url = ElmUrl.toString url, label = text username }
-            ]
+            { url = ElmUrl.toString url, label = text username }
         ]
 
 
 mailButton : Element msg
 mailButton =
     link
-        [ Region.description "send an email" ]
+        [ Font.color Style.link
+        , Region.description "send an email"
+        ]
         { url = "mailto:evan.friedenberg@gmail.com"
         , label = Icons.mail
         }
@@ -204,12 +201,8 @@ viewExternalAccounts =
     text "You can find me on..."
         :: row
             []
-            [ column
-                []
-                [ text "Email: " ]
-            , column
-                [ Font.color Style.link ]
-                [ mailButton ]
+            [ text "Email: "
+            , mailButton
             ]
         :: (List.filterMap
                 toExternalContact
@@ -251,7 +244,6 @@ wideLayout spinner =
             [ width (fillPortion 4)
             , paddingXY 0 100
             , spacing 16
-            , centerX
             ]
             [ el
                 [ centerX
@@ -288,20 +280,18 @@ wideLayout spinner =
 
 narrowLayout : Element msg
 narrowLayout =
-    column
-        [ width (fillPortion 4)
-        , paddingXY 0 50
-        , spacing 16
-        , centerX
-        , Element.htmlAttribute (Attr.class "responsive-mobile")
-        ]
-        (List.append
+    row
+        [ centerX, Element.htmlAttribute (Attr.class "responsive-mobile") ]
+        [ column
+            [ width (fillPortion 4)
+            , paddingXY 0 50
+            , spacing 16
+            ]
             [ el
-                [ centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+                [ Font.size 32, Font.bold, Font.color Style.secondary ]
                 (text "It's me, Evan!")
             , el
-                [ centerX
-                ]
+                []
                 (el
                     [ Border.rounded 100, clip ]
                     (picture
@@ -309,14 +299,12 @@ narrowLayout =
                         { src = "images/avatar.webp", description = "Picture of Evan", width = 200, height = 200 }
                     )
                 )
-            ]
-            [ column
-                [ centerX
-                , spacing 10
+            , column
+                [ spacing 10
                 ]
                 viewExternalAccounts
             ]
-        )
+        ]
 
 
 view :
