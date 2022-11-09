@@ -6,8 +6,8 @@ import HexColor exposing (HexColor)
 
 
 hexStringToColor : HexColor -> Maybe Color
-hexStringToColor (HexColor.HexColor hex) =
-    case String.toList hex of
+hexStringToColor hexColor =
+    case String.toList (HexColor.toString hexColor) of
         r1 :: r2 :: g1 :: g2 :: b1 :: b2 :: [] ->
             let
                 joinToHex : Char -> Char -> Maybe Int

@@ -1,4 +1,4 @@
-module HexColor exposing (HexColor(..), fromString)
+module HexColor exposing (HexColor, fromString, toString)
 
 import Parser exposing ((|.), (|=), Parser, chompWhile, end, getChompedString, run, succeed, symbol)
 
@@ -29,3 +29,8 @@ fromString s =
     run hexStringParser s
         |> Result.toMaybe
         |> Maybe.andThen validateLength
+
+
+toString : HexColor -> String
+toString (HexColor hs) =
+    hs
