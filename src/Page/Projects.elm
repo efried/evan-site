@@ -21,6 +21,7 @@ import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Head
 import Head.Seo as Seo
+import HexColor exposing (fromString)
 import Page exposing (Page, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
@@ -90,7 +91,15 @@ languagesSelection =
                 |> SelectionSet.with Language.name
                 |> SelectionSet.with
                     (Language.color
-                        |> SelectionSet.map (Maybe.map (String.toLower >> hexStringToColor))
+                        |> SelectionSet.map
+                            (Maybe.map
+                                (\s ->
+                                    String.toLower s
+                                        |> HexColor.fromString
+                                        |> Maybe.map hexStringToColor
+                                        |> flatten
+                                )
+                            )
                         |> SelectionSet.nonNullOrFail
                     )
             )
@@ -284,6 +293,16 @@ view maybeUrl sharedModel static =
 
 
 ---- UTILS ----
+
+
+flatten : Maybe (Maybe a) -> Maybe a
+flatten ma =
+    case ma of
+        Just m ->
+            m
+
+        Nothing ->
+            Nothing
 
 
 toUriString : Github.Scalar.Uri -> String
