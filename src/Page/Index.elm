@@ -280,30 +280,29 @@ wideLayout spinner =
 
 narrowLayout : Element msg
 narrowLayout =
-    row
-        [ centerX, Element.htmlAttribute (Attr.class "responsive-mobile") ]
-        [ column
-            [ width (fillPortion 4)
-            , paddingXY 0 50
-            , spacing 16
-            ]
-            [ el
-                [ Font.size 32, Font.bold, Font.color Style.secondary ]
-                (text "It's me, Evan!")
-            , el
-                []
-                (el
-                    [ Border.rounded 100, clip ]
-                    (picture
-                        [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
-                        { src = "images/avatar.webp", description = "Picture of Evan", width = 200, height = 200 }
-                    )
+    column
+        [ Element.htmlAttribute (Attr.class "responsive-mobile")
+        , width (fillPortion 4)
+        , paddingXY 0 50
+        , spacing 16
+        ]
+        [ el
+            [ centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+            (text "It's me, Evan!")
+        , el
+            [ centerX ]
+            (el
+                [ Border.rounded 100, clip ]
+                (picture
+                    [ { imageType = "image/avif", srcset = "images/avatar.avif" } ]
+                    { src = "images/avatar.webp", description = "Picture of Evan", width = 200, height = 200 }
                 )
-            , column
-                [ spacing 10
-                ]
-                viewExternalAccounts
+            )
+        , column
+            [ spacing 10
+            , centerX
             ]
+            viewExternalAccounts
         ]
 
 
