@@ -2,52 +2,38 @@ module Style exposing (hexStringToColor, link, primary, secondary, white)
 
 import Element exposing (Color, rgb255)
 import Hex
-import Parser exposing ((|.), (|=), Parser, chompWhile, end, getChompedString, run, succeed, symbol)
+import HexColor exposing (HexColor)
 
 
-hexStringParser : Parser String
-hexStringParser =
-    succeed identity
-        |. symbol "#"
-        |= getChompedString (chompWhile Char.isHexDigit)
-        |. end
+hexStringToColor : HexColor -> Maybe Color
+hexStringToColor (HexColor.HexColor hex) =
+    case String.toList hex of
+        r1 :: r2 :: g1 :: g2 :: b1 :: b2 :: [] ->
+            let
+                joinToHex : Char -> Char -> Maybe Int
+                joinToHex a b =
+                    String.fromList [ a, b ]
+                        |> Hex.fromString
+                        |> Result.toMaybe
+            in
+            Maybe.map3 rgb255
+                (joinToHex r1 r2)
+                (joinToHex g1 g2)
+                (joinToHex b1 b2)
 
+        r :: g :: b :: [] ->
+            let
+                toHex : Char -> Maybe Int
+                toHex =
+                    String.fromChar >> Hex.fromString >> Result.toMaybe
+            in
+            Maybe.map3 rgb255
+                (toHex r)
+                (toHex g)
+                (toHex b)
 
-hexStringToColor : String -> Maybe Color
-hexStringToColor hex =
-    run hexStringParser hex
-        |> Result.toMaybe
-        |> Maybe.map
-            (\hexes ->
-                case String.toLower hexes |> String.toList of
-                    r1 :: r2 :: g1 :: g2 :: b1 :: b2 :: [] ->
-                        let
-                            joinToHex : Char -> Char -> Maybe Int
-                            joinToHex a b =
-                                String.fromList [ a, b ]
-                                    |> Hex.fromString
-                                    |> Result.toMaybe
-                        in
-                        Maybe.map3 rgb255
-                            (joinToHex r1 r2)
-                            (joinToHex g1 g2)
-                            (joinToHex b1 b2)
-
-                    r :: g :: b :: [] ->
-                        let
-                            toHex : Char -> Maybe Int
-                            toHex =
-                                String.fromChar >> Hex.fromString >> Result.toMaybe
-                        in
-                        Maybe.map3 rgb255
-                            (toHex r)
-                            (toHex g)
-                            (toHex b)
-
-                    _ ->
-                        Nothing
-            )
-        |> Maybe.withDefault Nothing
+        _ ->
+            Nothing
 
 
 primary : Color
