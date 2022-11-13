@@ -227,7 +227,7 @@ viewProject project =
             ]
         ]
         [ row
-            [ Font.size 24
+            [ Font.size Style.fontSizes.header3
             , Font.color Style.secondary
             , width fill
             , spacingXY 0 10

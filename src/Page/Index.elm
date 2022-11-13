@@ -247,7 +247,7 @@ wideLayout spinner =
             ]
             [ el
                 [ centerX
-                , Font.size 32
+                , Font.size Style.fontSizes.header1
                 , Font.bold
                 , Font.color Style.secondary
                 ]
@@ -287,7 +287,7 @@ narrowLayout =
         , spacing 16
         ]
         [ el
-            [ centerX, Font.size 32, Font.bold, Font.color Style.secondary ]
+            [ centerX, Font.size Style.fontSizes.header2, Font.bold, Font.color Style.secondary ]
             (text "It's me, Evan!")
         , el
             [ centerX ]
