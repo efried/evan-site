@@ -1,7 +1,7 @@
-module Components exposing (animatedEl, picture)
+module Components exposing (Source, animatedEl, picture)
 
 import Element exposing (Element)
-import Html as Html exposing (Html)
+import Html exposing (Html)
 import Html.Attributes exposing (alt, attribute, height, src, style, width)
 import Simple.Animation exposing (Animation)
 import Simple.Animation.Animated

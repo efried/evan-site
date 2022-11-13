@@ -1,4 +1,4 @@
-module Header exposing (..)
+module Header exposing (view)
 
 import Element exposing (..)
 import Element.Border as Border
@@ -36,14 +36,18 @@ view currentPath =
                                 , height (px 40)
                                 , Region.description "Home"
                                 ]
-                                { src = "images/avatar-small.webp", description = "Picture of Evan" }
+                                { src =
+                                    Url.fromPath (Path.join [ "images", "avatar-small.webp" ])
+                                        |> Url.toString
+                                , description = "Picture of Evan"
+                                }
                         }
                     )
             ]
             (List.map
                 (el [ alignRight ])
-                [ link currentPath "about" "About"
-                , link currentPath "projects" "Projects"
+                [ link currentPath "projects" "Projects"
+                , link currentPath "about" "About"
                 ]
             )
         )

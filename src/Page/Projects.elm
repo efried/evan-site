@@ -1,20 +1,34 @@
-module Page.Projects exposing (Data, Model, Msg, page)
+module Page.Projects exposing (Data, Model, Msg, Project, RouteParams, page)
 
 import DataSource exposing (DataSource)
-import DataSource.Http
 import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
+import Github.Enum.LanguageOrderField exposing (LanguageOrderField(..))
+import Github.Enum.OrderDirection exposing (OrderDirection(..))
+import Github.Enum.RepositoryAffiliation exposing (RepositoryAffiliation(..))
+import Github.Enum.RepositoryOrderField exposing (RepositoryOrderField(..))
+import Github.Enum.RepositoryPrivacy exposing (RepositoryPrivacy(..))
+import Github.Object
+import Github.Object.Language as Language
+import Github.Object.LanguageConnection
+import Github.Object.Repository as Repository
+import Github.Object.RepositoryConnection
+import Github.Object.User as User
+import Github.Query as Query
+import Github.Scalar
+import Graphql.OptionalArgument exposing (OptionalArgument(..))
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Head
 import Head.Seo as Seo
-import OptimizedDecoder
-import Page exposing (Page, PageWithState, StaticPayload)
+import HexColor
+import Page exposing (Page, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
-import Pages.Secrets as Secrets
 import Pages.Url
 import Path
+import Request
 import Shared
-import Style
+import Style exposing (hexStringToColor)
 import View exposing (View)
 
 
@@ -39,13 +53,23 @@ page =
         |> Page.buildNoState { view = view }
 
 
+type alias Language =
+    { name : String
+    , color : Maybe Color
+    }
+
+
 type alias Project =
     { name : String
     , description : Maybe String
     , homepage : Maybe String
-    , forked : Bool
-    , archived : Bool
     , htmlUrl : String
+    , languages : List Language
+    }
+
+
+type alias GithubUser =
+    { repositories : List Project
     }
 
 
@@ -53,35 +77,86 @@ type alias Data =
     List Project
 
 
+languagesSelection : SelectionSet (List Language) Github.Object.Repository
+languagesSelection =
+    Repository.languages
+        (\optionals ->
+            { optionals
+                | first = Present 10
+                , orderBy = Present { field = Size, direction = Desc }
+            }
+        )
+        (Github.Object.LanguageConnection.nodes
+            (SelectionSet.succeed Language
+                |> SelectionSet.with Language.name
+                |> SelectionSet.with
+                    (Language.color
+                        |> SelectionSet.map
+                            (Maybe.map
+                                (\s ->
+                                    String.toLower s
+                                        |> HexColor.fromString
+                                        |> Maybe.map hexStringToColor
+                                        |> flatten
+                                )
+                            )
+                        |> SelectionSet.nonNullOrFail
+                    )
+            )
+            |> SelectionSet.nonNullOrFail
+        )
+        |> SelectionSet.nonNullOrFail
+        |> SelectionSet.nonNullElementsOrFail
+
+
+repositorySelection : SelectionSet Project Github.Object.Repository
+repositorySelection =
+    SelectionSet.succeed Project
+        |> SelectionSet.with Repository.name
+        |> SelectionSet.with Repository.description
+        |> SelectionSet.with (SelectionSet.map (Maybe.map toUriString) Repository.homepageUrl)
+        |> SelectionSet.with (SelectionSet.map toUriString Repository.url)
+        |> SelectionSet.with languagesSelection
+
+
+repositories : SelectionSet (List Project) Github.Object.User
+repositories =
+    User.repositories
+        (\optionals ->
+            { optionals
+                | first = Present 100
+                , orderBy = Present { field = Name, direction = Asc }
+                , ownerAffiliations = Present [ Just Owner ]
+                , affiliations = Present [ Just Owner ]
+                , privacy = Present Public
+                , isFork = Present False
+            }
+        )
+        (Github.Object.RepositoryConnection.nodes
+            repositorySelection
+            |> SelectionSet.nonNullOrFail
+            |> SelectionSet.nonNullElementsOrFail
+        )
+
+
+query =
+    Query.user { login = "efried" } <|
+        (SelectionSet.succeed GithubUser |> with repositories)
+
+
 data : DataSource Data
 data =
-    DataSource.Http.request
-        (Secrets.succeed
-            (\apiKey ->
-                { url = "https://api.github.com/users/efried/repos?type=owner"
-                , method = "GET"
-                , headers = [ ( "Accept", "application/vnd.github+json" ), ( "Authorization", "token " ++ apiKey ) ]
-                , body = DataSource.Http.emptyBody
-                }
-            )
-            |> Secrets.with "API_KEY"
-        )
-        (OptimizedDecoder.list
-            (OptimizedDecoder.map6
-                Project
-                (OptimizedDecoder.field "name" OptimizedDecoder.string)
-                (OptimizedDecoder.field "description" (OptimizedDecoder.nullable OptimizedDecoder.string))
-                (OptimizedDecoder.field "homepage" (OptimizedDecoder.nullable OptimizedDecoder.string))
-                (OptimizedDecoder.field "fork" OptimizedDecoder.bool)
-                (OptimizedDecoder.field "archived" OptimizedDecoder.bool)
-                (OptimizedDecoder.field "html_url" OptimizedDecoder.string)
-            )
-        )
+    Request.staticGraphqlRequest
+        "https://api.github.com/graphql"
+        query
         |> DataSource.map
-            (List.filter
-                (\project ->
-                    project.forked == False && project.archived == False
-                )
+            (\userMaybe ->
+                case userMaybe of
+                    Nothing ->
+                        []
+
+                    Just user ->
+                        user.repositories
             )
 
 
@@ -105,20 +180,37 @@ head static =
         |> Seo.website
 
 
-validateNonEmptyString : String -> Maybe String
-validateNonEmptyString s =
-    if String.isEmpty s then
-        Nothing
+viewLanguages : List Language -> Element msg
+viewLanguages languages =
+    paragraph [ paddingEach { top = 10, bottom = 16, left = 0, right = 0 } ]
+        (List.map
+            (\language ->
+                let
+                    color =
+                        case language.color of
+                            Just clr ->
+                                clr
 
-    else
-        Just s
+                            Nothing ->
+                                Style.primary
+                in
+                el
+                    [ Border.widthEach { top = 0, bottom = 4, left = 0, right = 0 }
+                    , Border.color color
+                    ]
+                    (text language.name)
+            )
+            languages
+            |> List.intersperse
+                (text ", ")
+        )
 
 
 viewProject : Project -> Element msg
 viewProject project =
     column
         [ width (fill |> minimum 315)
-        , height (px 200)
+        , height (fill |> minimum 200 |> maximum 250)
         , padding 10
         , Border.solid
         , Border.width 2
@@ -143,7 +235,7 @@ viewProject project =
             [ text project.name
             ]
         , column []
-            [ paragraph [ paddingXY 0 10 ]
+            [ paragraph [ paddingEach { top = 10, right = 0, bottom = 0, left = 0 } ]
                 [ text
                     (case project.description of
                         Nothing ->
@@ -153,6 +245,7 @@ viewProject project =
                             description ++ "."
                     )
                 ]
+            , viewLanguages project.languages
             , newTabLink [ Font.bold, Font.underline, Font.color Style.link ]
                 { url = project.htmlUrl
                 , label = text "View it on Github"
@@ -196,3 +289,31 @@ view maybeUrl sharedModel static =
                 )
             )
     }
+
+
+
+---- UTILS ----
+
+
+flatten : Maybe (Maybe a) -> Maybe a
+flatten ma =
+    case ma of
+        Just m ->
+            m
+
+        Nothing ->
+            Nothing
+
+
+toUriString : Github.Scalar.Uri -> String
+toUriString (Github.Scalar.Uri uri) =
+    uri
+
+
+validateNonEmptyString : String -> Maybe String
+validateNonEmptyString s =
+    if String.isEmpty s then
+        Nothing
+
+    else
+        Just s

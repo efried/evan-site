@@ -1,6 +1,39 @@
-module Style exposing (..)
+module Style exposing (hexStringToColor, link, primary, secondary, white)
 
 import Element exposing (Color, rgb255)
+import Hex
+import HexColor exposing (HexColor)
+
+
+hexStringToColor : HexColor -> Maybe Color
+hexStringToColor hexColor =
+    case String.toList (HexColor.toString hexColor) of
+        r1 :: r2 :: g1 :: g2 :: b1 :: b2 :: [] ->
+            let
+                joinToHex : Char -> Char -> Maybe Int
+                joinToHex a b =
+                    String.fromList [ a, b ]
+                        |> Hex.fromString
+                        |> Result.toMaybe
+            in
+            Maybe.map3 rgb255
+                (joinToHex r1 r2)
+                (joinToHex g1 g2)
+                (joinToHex b1 b2)
+
+        r :: g :: b :: [] ->
+            let
+                toHex : Char -> Maybe Int
+                toHex =
+                    String.fromChar >> Hex.fromString >> Result.toMaybe
+            in
+            Maybe.map3 rgb255
+                (toHex r)
+                (toHex g)
+                (toHex b)
+
+        _ ->
+            Nothing
 
 
 primary : Color
