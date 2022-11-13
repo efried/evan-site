@@ -115,6 +115,7 @@ view sharedData page model toMsg pageView =
                     , height fill
                     , padding 20
                     , Font.color Style.primary
+                    , Font.size Style.fontSizes.body
                     ]
                     pageView.body
                 ]

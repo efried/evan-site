@@ -2,13 +2,15 @@ module Page.About exposing (Data, Model, Msg, page)
 
 import DataSource exposing (DataSource)
 import Element exposing (..)
+import Element.Font as Font
 import Head
 import Head.Seo as Seo
 import Page exposing (Page, PageWithState, StaticPayload)
 import Pages.PageUrl exposing (PageUrl)
-import Pages.Url
+import Pages.Url as Url
 import Path
 import Shared
+import Style
 import View exposing (View)
 
 
@@ -50,7 +52,7 @@ head static =
         { canonicalUrlOverride = Nothing
         , siteName = "evanfriedenberg.com"
         , image =
-            { url = Pages.Url.fromPath (Path.join [ "images", "avatar.webp" ])
+            { url = Url.fromPath (Path.join [ "images", "avatar.webp" ])
             , alt = "evan avatar"
             , dimensions = Just { width = 320, height = 320 }
             , mimeType = Just "image/webp"
@@ -70,5 +72,36 @@ view :
 view maybeUrl sharedModel static =
     { title = "About"
     , body =
-        el [] (text "About me")
+        column [ centerX, paddingXY 0 32, width (fill |> maximum 800) ]
+            [ column
+                []
+                [ el
+                    [ Font.size Style.fontSizes.header1
+                    , Font.bold
+                    , Font.color Style.secondary
+                    , paddingXY 0 32
+                    ]
+                    (text "Hey there 👋")
+                , column [ paddingXY 0 32, spacingXY 0 16 ]
+                    [ paragraph []
+                        [ text "You "
+                        , el [ Font.italic ] (text "clearly")
+                        , text " want to learn a little more about me."
+                        ]
+                    , paragraph [] [ text "I am a software developer with 6+ years at companies large and small." ]
+                    , paragraph [] [ text "I love creating delightful experiences through code. I am especially interested in functional programming, API design, and testing." ]
+                    ]
+                ]
+            , paragraph [ paddingXY 0 32 ] [ text "You can also find me working out 🏋️, drinking coffee ☕️, reading 📚, or watching reality TV 📺." ]
+            , wrappedRow
+                [ paddingXY 0 32 ]
+                [ text "For all else "
+                , download []
+                    { url =
+                        Url.fromPath (Path.join [ "files", "Evan_Friedenberg_Resume.pdf" ])
+                            |> Url.toString
+                    , label = el [ Font.underline ] (text "download my resume")
+                    }
+                ]
+            ]
     }

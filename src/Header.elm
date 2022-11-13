@@ -49,6 +49,7 @@ view currentPath =
                 [ link currentPath "projects" "Projects"
                 , link currentPath "about" "About"
                 ]
+                |> List.intersperse (text "/")
             )
         )
 

@@ -1,4 +1,4 @@
-module Style exposing (hexStringToColor, link, primary, secondary, white)
+module Style exposing (fontSizes, hexStringToColor, link, primary, secondary, white)
 
 import Element exposing (Color, rgb255)
 import Hex
@@ -54,3 +54,20 @@ link =
 white : Color
 white =
     rgb255 255 255 255
+
+
+type alias FontSizes =
+    { header1 : Int
+    , header2 : Int
+    , header3 : Int
+    , body : Int
+    }
+
+
+fontSizes : FontSizes
+fontSizes =
+    { header1 = 48
+    , header2 = 32
+    , header3 = 24
+    , body = 20
+    }
