@@ -1,5 +1,6 @@
 module Page.Index exposing (Data, Model, Msg, RouteParams, page)
 
+import Animation
 import Browser.Navigation
 import Components exposing (animatedEl, picture)
 import DataSource exposing (DataSource)
@@ -17,8 +18,6 @@ import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
 import Path
 import Shared
-import Simple.Animation as Animation
-import Simple.Animation.Property as P
 import Style
 import Url as ElmUrl
 import View exposing (View)
@@ -148,16 +147,6 @@ type alias ExternalContact =
     }
 
 
-spin : Animation.Animation
-spin =
-    Animation.fromTo
-        { duration = round (1 / 33 * 60000)
-        , options = [ Animation.loop, Animation.linear ]
-        }
-        [ P.rotate 0 ]
-        [ P.rotate 360 ]
-
-
 toExternalContact : ( String, String, String ) -> Maybe ExternalContact
 toExternalContact ( source, username, maybeUrl ) =
     Maybe.map
@@ -217,7 +206,7 @@ wideLayout spinner =
         animation =
             case spinner of
                 Spinning ->
-                    spin
+                    Animation.spin
 
                 NotSpinning ->
                     Animation.empty

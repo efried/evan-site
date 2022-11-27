@@ -1,5 +1,7 @@
 module Page.About exposing (Data, Model, Msg, page)
 
+import Animation
+import Components exposing (animatedEl)
 import DataSource exposing (DataSource)
 import Element exposing (..)
 import Element.Font as Font
@@ -75,13 +77,15 @@ view maybeUrl sharedModel static =
         column [ centerX, paddingXY 0 32, width (fill |> maximum 800) ]
             [ column
                 []
-                [ el
+                [ row
                     [ Font.size Style.fontSizes.header1
                     , Font.bold
                     , Font.color Style.secondary
                     , paddingXY 0 32
                     ]
-                    (text "Hey there 👋")
+                    [ text "Hey there "
+                    , animatedEl Animation.wave [] (text "✋")
+                    ]
                 , column [ paddingXY 0 32, spacingXY 0 16 ]
                     [ paragraph []
                         [ text "You "
