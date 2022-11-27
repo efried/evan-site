@@ -5,6 +5,7 @@ import DataSource
 import Element exposing (..)
 import Element.Background as Background
 import Element.Font as Font
+import Footer
 import Header
 import Html exposing (Html)
 import Pages.Flags
@@ -104,6 +105,7 @@ view sharedData page model toMsg pageView =
     , body =
         layout
             [ Background.color Style.white
+            , Font.color Style.primary
             ]
             (column
                 [ width fill
@@ -114,10 +116,10 @@ view sharedData page model toMsg pageView =
                     [ width fill
                     , height fill
                     , padding 20
-                    , Font.color Style.primary
                     , Font.size Style.fontSizes.body
                     ]
                     pageView.body
+                , Footer.view
                 ]
             )
     }
