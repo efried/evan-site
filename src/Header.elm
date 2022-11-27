@@ -18,7 +18,6 @@ view currentPath =
         , spacingXY 20 0
         , Border.color Style.primary
         , Border.widthEach { bottom = 2, left = 0, right = 0, top = 0 }
-        , Font.color Style.primary
         ]
         (List.append
             [ if String.isEmpty (Path.toRelative currentPath) then

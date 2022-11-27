@@ -61,6 +61,7 @@ type alias FontSizes =
     , header2 : Int
     , header3 : Int
     , body : Int
+    , small : Int
     }
 
 
@@ -70,4 +71,5 @@ fontSizes =
     , header2 = 32
     , header3 = 24
     , body = 20
+    , small = 12
     }
