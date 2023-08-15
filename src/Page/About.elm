@@ -52,16 +52,16 @@ head :
 head static =
     Seo.summary
         { canonicalUrlOverride = Nothing
-        , siteName = "evanfriedenberg.com"
+        , siteName = "Evan Friedenberg"
         , image =
             { url = Url.fromPath (Path.join [ "images", "avatar.webp" ])
-            , alt = "evan avatar"
+            , alt = "logo"
             , dimensions = Just { width = 320, height = 320 }
             , mimeType = Just "image/webp"
             }
         , description = "About me"
         , locale = Nothing
-        , title = "About"
+        , title = "About | Evan Friedenberg"
         }
         |> Seo.website
 
@@ -72,7 +72,7 @@ view :
     -> StaticPayload Data RouteParams
     -> View Msg
 view maybeUrl sharedModel static =
-    { title = "About"
+    { title = "About | Evan Friedenberg"
     , body =
         column [ centerX, paddingXY 0 32, width (fill |> maximum 800) ]
             [ column
