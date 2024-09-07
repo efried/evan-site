@@ -1,0 +1,25 @@
+{
+  user(login: "efried") {
+    repositories(
+      first: 100
+      orderBy: {field: NAME, direction: ASC}
+      ownerAffiliations: OWNER
+      affiliations: OWNER
+      privacy: PUBLIC
+      isFork: false
+    ) {
+      nodes {
+        name
+        description
+        homepageUrl
+        url
+        languages(first: 5) {
+          nodes {
+            name
+            color
+          }
+        }
+      }
+    }
+  }
+}
