@@ -1,10 +1,30 @@
+:root {
+    --spin-duration: 1818.1818ms;
+}
+@keyframes rotating {
+    to { transform: rotate(360deg); }
+}
 @media (max-width: 600px) {
     .responsive-desktop {
-      display: none !important;
+        display: none !important;
     }
-  }
-  @media (min-width: 600px) {
+}
+@media (min-width: 600px) {
     .responsive-mobile {
-      display: none !important;
+        display: none !important;
     }
-  }
+}
+.record:hover > picture {
+    animation: rotating var(--spin-duration) linear infinite;
+    -webkit-animation: rotating var(--spin-duration) linear infinite;
+    -moz-animation: rotating var(--spin-duration) linear infinite;
+    -ms-animation: rotating var(--spin-duration) linear infinite;
+    -o-animation: rotating var(--spin-duration) linear infinite;
+}
+.record > div > div > img {
+    visibility: hidden !important
+}
+.record:hover > div > div > img {
+    visibility: visible !important;
+}
+
