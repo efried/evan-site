@@ -79,7 +79,7 @@ head app =
 
 view : App data action routeParams -> Shared.Model -> View (PagesMsg ())
 view app shared =
-    { title = "Evan Friedenberg | Home"
+    { title = "About | Evan Friedenberg"
     , body =
         column [ centerX, paddingXY 0 32, width (fill |> maximum 800) ]
             [ column

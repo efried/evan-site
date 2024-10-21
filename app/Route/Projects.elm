@@ -58,7 +58,7 @@ head app =
             }
         , description = "About me"
         , locale = Nothing
-        , title = "About | Evan Friedenberg"
+        , title = "Projects | Evan Friedenberg"
         }
         |> Seo.website
 
@@ -246,7 +246,7 @@ viewProject project =
 
 view : App Data action routeParams -> Shared.Model -> View (PagesMsg ())
 view app shared =
-    { title = "Evan Friedenberg | Home"
+    { title = "Projects | Evan Friedenberg"
     , body =
         el
             []

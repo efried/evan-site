@@ -71,7 +71,7 @@ head app =
             }
         , description = "A site about Evan Friedenberg and the things the things he is working on"
         , locale = Nothing
-        , title = "Evan Friedenberg"
+        , title = "Home | Evan Friedenberg"
         }
         |> Seo.website
 
@@ -216,7 +216,7 @@ narrowLayout =
 
 view : App data action routeParams -> Shared.Model -> View (PagesMsg ())
 view app shared =
-    { title = "Evan Friedenberg | Home"
+    { title = "Home | Evan Friedenberg"
     , body =
         row [ width fill, height fill ] [ wideLayout, narrowLayout ]
     }
